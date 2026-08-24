@@ -15,8 +15,7 @@ let completedScenes = new Set();
 let sceneComplete = false;
 let selectedDescription = null;
 let clubState = { assignments: {}, correct: [], seated: false };
-let debateProgress = { currentIndex: 0, recorded: [], part1Complete: false, part2Started: false };
-let gameState = { detectiveApproach: null };
+let debateProgress = { currentIndex: 0, recorded: [], part1Complete: false };
 let debateCompleted = false;
 let caseDinnerGuests = [null, null, null];
 let caseDinnerGuestsComplete = false;
@@ -32,23 +31,16 @@ let activeDishNote = null;
 let caseDishWords = { lobster: [], trifle: [], breadCheese: [] };
 let replayingScene = null;
 let mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false };
-let mrJonesFirstAssessment = null;
-let mrJonesAssessmentDraft = null;
 let mrJonesNewEvidenceProgress = 0;
 let mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null };
-let mrJonesRevisedAssessment = null;
-let mrJonesRevisedDraft = null;
 let mrJonesLogicQuestionComplete = false;
 let mrJonesSceneCompleted = false;
 let theoryReconstruction = {};
 let theoryReconstructionCorrect = {};
 let theoryReconstructionCompleted = false;
-let theoryChallengeProgress = 0;
-let theoryChallengesCompleted = { pender: false, joyce: false, petherick: false, raymond: false };
 let theoriesFinalQuestionComplete = false;
 let theoriesCompleted = false;
 let selectedTheoryNote = null;
-let activeTheoryChallenge = false;
 let clueMeaningSolved = false;
 let clueHintsOpened = 0;
 let clueSupperConnection = null;
@@ -65,6 +57,7 @@ let finalCaseSolution = { murderer: null, accomplice: null, method: null, motive
 let finalCaseSolved = false;
 let dragScrollFrame = null;
 let dragScrollDirection = 0;
+let autoAdvanceTimer = null;
 
 const answerOrderCache = new Map();
 const multipleChoiceSelectors = [
@@ -152,12 +145,12 @@ function unlockSolvedCaseAchievement() {
 }
 
 const clubGuests = [
-  { id: 'marple', name: 'Miss Marple', image: 'images/miss-marple.png', description: 'Senior citizen' },
-  { id: 'raymond', name: 'Raymond West', image: 'images/raymond-west.png', description: 'Writer' },
-  { id: 'joyce', name: 'Joyce Lemprière', image: 'images/joyce-lempriere.png', description: 'Artist' },
-  { id: 'henry', name: 'Sir Henry Clithering', image: 'images/sir-henry-clithering.png', description: 'Former police commissioner' },
-  { id: 'pender', name: 'Dr Pender', image: 'images/dr-pender.png', description: 'Clergyman' },
-  { id: 'petherick', name: 'Mr Petherick', image: 'images/mr-petherick.png', description: 'Solicitor' }
+  { id: 'marple', name: 'Miss Marple', image: 'images/miss-marple.png', description: 'An elderly lady with snowy white hair, faded blue eyes and a gentle, kindly expression. She is quietly knitting and observing everyone in the room.' },
+  { id: 'raymond', name: 'Raymond West', image: 'images/raymond-west.png', description: 'A self-conscious and debonair writer who enjoys dramatic words and carefully created atmosphere.' },
+  { id: 'joyce', name: 'Joyce Lemprière', image: 'images/joyce-lempriere.png', description: 'An artist with close-cropped black hair and unusual hazel-green eyes. She appears lively, sharp and unconventional.' },
+  { id: 'henry', name: 'Sir Henry Clithering', image: 'images/sir-henry-clithering.png', description: 'A well-groomed and worldly gentleman who looks experienced, confident and socially at ease.' },
+  { id: 'pender', name: 'Dr Pender', image: 'images/dr-pender.png', description: 'The elderly clergyman of the parish, respectable, thoughtful and dignified.' },
+  { id: 'petherick', name: 'Mr Petherick', image: 'images/mr-petherick.png', description: 'A small, dried-up solicitor wearing eyeglasses that he looks over rather than through. He appears precise, reserved and analytical.' }
 ];
 const descriptionOrder = clubGuests.map(guest => guest.id).sort(() => Math.random() - 0.5);
 
@@ -192,13 +185,6 @@ const debateEntries = [
     question: 'Which idea best matches Sir Henry’s view?',
     options: ['Intuition is more reliable than evidence.', 'Experience with real cases gives a practical advantage.', 'Ordinary village life reveals every kind of crime.']
   }
-];
-
-const detectiveMethods = [
-  { id: 'facts', name: 'Facts', description: 'Examine what is known and question every detail.' },
-  { id: 'intuition', name: 'Intuition', description: 'Notice reactions and things that simply feel wrong.' },
-  { id: 'imagination', name: 'Imagination', description: 'Consider possibilities that others may overlook.' },
-  { id: 'human-nature', name: 'Human Nature', description: 'Look for familiar patterns in the way people behave.' }
 ];
 
 const sceneShell = (scene, content) => `
@@ -358,8 +344,8 @@ function bindClubInteractions() {
   if (takeSeatButton) takeSeatButton.addEventListener('click', () => {
     clubState.seated = true;
     saveGame();
-    completeCurrentScene();
-    goToNextScene();
+    renderClubScene();
+    completeAndAdvance({ delay: 1200 });
   });
 }
 
@@ -418,38 +404,12 @@ function renderDebatePortrait(entry) {
 
 function renderDebateScene(message = '') {
   if (debateCompleted) {
-    const chosen = detectiveMethods.find(method => method.id === gameState.detectiveApproach);
     gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet debate-finished">${renderMinutesEmblem()}
       <header class="minutes-heading"><span>MINUTES OF THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
-      <div class="debate-stamp">METHOD<br>RECORDED</div>
-      <p class="part-label">YOUR DETECTIVE METHOD</p>
-      <h3>${chosen?.name || ''}</h3>
-      <p>${chosen?.description || ''}</p>
-      <small>Your choice has been entered into the minutes. Continue to hear the case.</small>
+      <div class="debate-stamp">DEBATE<br>RECORDED</div>
+      <h3>Everyone has made their case.</h3>
+      ${renderMinutesList()}
     </section>`);
-    return;
-  }
-
-  if (debateProgress.part1Complete && debateProgress.part2Started) {
-    renderDetectiveMethod(message);
-    return;
-  }
-
-  if (debateProgress.part1Complete) {
-    gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet">${renderMinutesEmblem()}
-      <header class="minutes-heading"><span>MINUTES OF THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
-      <div class="debate-recorded-view">
-        <div class="debate-stamp">DEBATE<br>RECORDED</div>
-        <h3>Everyone has made their case.</h3>
-        ${renderMinutesList()}
-        <button class="minutes-button" id="openMethodButton" type="button">CHOOSE YOUR METHOD →</button>
-      </div>
-    </section>`);
-    document.querySelector('#openMethodButton').addEventListener('click', () => {
-      debateProgress.part2Started = true;
-      saveGame();
-      renderDebateScene();
-    });
     return;
   }
 
@@ -489,8 +449,8 @@ function renderDebateScene(message = '') {
       debateProgress.part1Complete = true;
       debateCompleted = true;
       saveGame();
-      completeCurrentScene();
-      window.setTimeout(goToNextScene, 520);
+      renderDebateScene();
+      completeAndAdvance({ delay: 1200 });
       return;
     }
     debateProgress.currentIndex += 1;
@@ -503,47 +463,6 @@ function renderDebateScene(message = '') {
     saveGame();
     renderDebateScene();
   });
-}
-
-function renderDetectiveMethod(message = '') {
-  const selectedMethod = detectiveMethods.find(method => method.id === gameState.detectiveApproach);
-  gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet method-sheet">${renderMinutesEmblem()}
-    <header class="minutes-heading"><span>MINUTES OF THE TUESDAY NIGHT CLUB</span><small>Part 2 — choose your method</small></header>
-    <p class="part-label">PART 2 — CHOOSE YOUR METHOD</p>
-    <h3 class="method-title">And what about you?</h3>
-    <p class="method-question">What will guide you in this investigation?</p>
-    <div class="method-options">${detectiveMethods.map(method => `<button type="button" data-method="${method.id}" class="${gameState.detectiveApproach === method.id ? 'selected' : ''}"><strong>${method.name}</strong><span>${method.description}</span></button>`).join('')}</div>
-    <div class="method-summary ${selectedMethod ? 'visible' : ''}">
-      <p>YOUR DETECTIVE METHOD</p>
-      <h4>${selectedMethod?.name || 'Not selected'}</h4>
-      <span>${selectedMethod?.description || 'Choose the principle that will guide your investigation.'}</span>
-    </div>
-    <button class="minutes-button confirm-method" id="confirmMethodButton" type="button" ${selectedMethod ? '' : 'disabled'}>CONFIRM MY METHOD</button>
-    <p class="debate-message" aria-live="polite">${message}</p>
-  </section>`);
-
-  document.querySelectorAll('[data-method]').forEach(button => button.addEventListener('click', () => {
-    gameState.detectiveApproach = button.dataset.method;
-    saveGame();
-    renderDetectiveMethod();
-  }));
-  document.querySelector('#confirmMethodButton').addEventListener('click', () => {
-    if (!gameState.detectiveApproach) return;
-    debateCompleted = true;
-    saveGame();
-    completeCurrentScene();
-    goToNextScene();
-  });
-}
-
-function getDetectiveHint(context) {
-  switch (gameState.detectiveApproach) {
-    case 'facts': return context.facts;
-    case 'intuition': return context.intuition;
-    case 'imagination': return context.imagination;
-    case 'human-nature': return context.humanNature;
-    default: return '';
-  }
 }
 
 const dinnerGuests = [
@@ -663,7 +582,10 @@ function renderCaseScene(message = '') {
   });
   document.querySelectorAll('[data-murder-answer]').forEach(button => button.addEventListener('click', () => {
     if (button.dataset.murderAnswer === 'no') { renderCaseScene('Arsenic was found after an apparent case of food poisoning. Examine the reports again.'); return; }
-    caseConfirmedAsMurder = true; saveGame(); completeCurrentScene(); window.setTimeout(goToNextScene, 650);
+    caseConfirmedAsMurder = true;
+    saveGame();
+    renderCaseScene('MURDER CONFIRMED');
+    completeAndAdvance({ delay: 1500 });
   }));
 }
 
@@ -679,22 +601,14 @@ const mrJonesNewEvidence = [
   { type: 'NEW INFORMATION', text: 'The words on the blotting paper referred to Mr Jones’s brother in Australia.', target: 'letter', status: 'explained', statusLabel: 'EXPLAINED', note: 'The message was not about Mrs Jones.' },
   { type: 'NEW TESTIMONY', text: 'Mr Jones had not recently been meeting the doctor’s daughter.', target: 'otherWoman', status: 'not-supported', statusLabel: 'NOT SUPPORTED', note: 'The supposed relationship is not supported by the new evidence.' }
 ];
-const assessmentOptions = [
-  { id: 'weak', label: 'WEAK' }, { id: 'possible', label: 'POSSIBLE' }, { id: 'strong', label: 'STRONG' }, { id: 'very-strong', label: 'VERY STRONG' }
-];
-
 function mrJonesStatusLabel(id) {
   const status = mrJonesEvidenceStatus[id];
   return status === 'still-relevant' ? 'STILL RELEVANT' : status === 'method-not-proved' ? 'METHOD NOT PROVED' : status === 'not-supported' ? 'NOT SUPPORTED' : status === 'explained' ? 'EXPLAINED' : '';
 }
 
-function renderAssessmentScale(draft, mode) {
-  return `<div class="investigator-scale" role="group" aria-label="How strong is the case against Mr Jones?">${assessmentOptions.map(option => `<button type="button" data-assessment-mode="${mode}" data-assessment="${option.id}" class="${draft === option.id ? 'selected' : ''}"><span></span><strong>${option.label}</strong></button>`).join('')}</div>`;
-}
-
 function renderMrJonesEvidenceScene(message = '') {
   const allOpened = Object.values(mrJonesEvidenceOpened).every(Boolean);
-  const newItem = mrJonesFirstAssessment && mrJonesNewEvidenceProgress < 3 ? mrJonesNewEvidence[mrJonesNewEvidenceProgress] : null;
+  const newItem = allOpened && mrJonesNewEvidenceProgress < 3 ? mrJonesNewEvidence[mrJonesNewEvidenceProgress] : null;
   const statusNotes = {
     cornflour: 'Mrs Jones did not drink it.', letter: 'The message was not about Mrs Jones.', otherWoman: 'The supposed relationship is not supported by the new evidence.'
   };
@@ -710,21 +624,17 @@ function renderMrJonesEvidenceScene(message = '') {
 
   let actionPanel = '';
   if (!allOpened) {
-    actionPanel = `<section class="jones-action-panel"><p class="board-part">PART 1 · EXAMINE THE EVIDENCE</p><h3>Open all five case materials.</h3><button type="button" class="instinct-button" id="jonesInstinct">YOUR INSTINCT</button><p class="instinct-hint" id="instinctHint"></p></section>`;
-  } else if (!mrJonesFirstAssessment) {
-    actionPanel = `<section class="jones-action-panel assessment-panel"><p class="board-part">YOUR FIRST ASSESSMENT</p><h3>How strong is the case against Mr Jones?</h3>${renderAssessmentScale(mrJonesAssessmentDraft, 'first')}<button class="case-action" id="recordFirstAssessment" type="button" ${mrJonesAssessmentDraft ? '' : 'disabled'}>RECORD MY ASSESSMENT</button></section>`;
+    actionPanel = `<section class="jones-action-panel"><p class="board-part">PART 1 · EXAMINE THE EVIDENCE</p><h3>Open all five case materials.</h3></section>`;
   } else if (mrJonesNewEvidenceProgress < 3) {
-    actionPanel = `<section class="jones-action-panel new-evidence-panel"><div class="new-evidence-stamp">NEW EVIDENCE RECEIVED</div><article><span>${newItem.type}</span><p>${newItem.text}</p></article><h3>Which part of the case does this change?</h3><p>Choose one of the five evidence cards on the board.</p><button type="button" class="instinct-button" id="jonesInstinct">YOUR INSTINCT</button><p class="instinct-hint" id="instinctHint"></p></section>`;
-  } else if (!mrJonesRevisedAssessment) {
-    actionPanel = `<section class="jones-action-panel assessment-panel changed-assessment"><div class="new-evidence-stamp">THE CASE HAS CHANGED</div><div class="assessment-ticket"><span>FIRST ASSESSMENT</span><strong>${mrJonesFirstAssessment.replace('-', ' ').toUpperCase()}</strong></div><h3>How strong is the case against Mr Jones now?</h3>${renderAssessmentScale(mrJonesRevisedDraft, 'revised')}<button class="case-action" id="recordRevisedAssessment" type="button" ${mrJonesRevisedDraft ? '' : 'disabled'}>RECORD MY NEW ASSESSMENT</button></section>`;
+    actionPanel = `<section class="jones-action-panel new-evidence-panel"><div class="new-evidence-stamp">NEW EVIDENCE RECEIVED</div><article><span>${newItem.type}</span><p>${newItem.text}</p></article><h3>Which part of the case does this change?</h3><p>Choose one of the five evidence cards on the board.</p></section>`;
   } else if (!mrJonesLogicQuestionComplete) {
     actionPanel = `<section class="jones-action-panel logic-panel"><p class="board-part">ONE MORE QUESTION</p><p>Some of the evidence against Mr Jones was misleading.</p><h3>Does that prove that Mr Jones is innocent?</h3><div class="logic-choices"><button type="button" data-logic-answer="yes"><strong>YES</strong><span>The case against him has collapsed, so he must be innocent.</span></button><button type="button" data-logic-answer="no"><strong>NO</strong><span>Weak or misleading evidence does not prove that a suspect is innocent.</span></button></div></section>`;
   } else {
-    actionPanel = `<section class="jones-action-panel conclusion-panel"><div class="new-evidence-stamp">THE CASE HAS CHANGED</div><div class="assessment-pair"><div><span>FIRST ASSESSMENT</span><strong>${mrJonesFirstAssessment.replace('-', ' ').toUpperCase()}</strong></div><div><span>REVISED ASSESSMENT</span><strong>${mrJonesRevisedAssessment.replace('-', ' ').toUpperCase()}</strong></div></div><h3>Mr Jones remains a suspect.</h3><p>But the original case against him is no longer enough.</p></section>`;
+    actionPanel = `<section class="jones-action-panel conclusion-panel"><div class="new-evidence-stamp">CONCLUSION RECORDED</div><h3>Mr Jones remains a suspect.</h3><p>Weak evidence is not the same as proof of innocence.</p></section>`;
   }
 
   gameScreen.innerHTML = sceneShell(scenes[3], `<div class="jones-board-wrap"><section class="jones-board ${mrJonesNewEvidenceProgress ? 'board-changing' : ''}">
-    <div class="jones-board-head"><span>INVESTIGATION BOARD · PRIVATE</span>${mrJonesFirstAssessment ? `<div class="assessment-ticket"><span>FIRST ASSESSMENT</span><strong>${mrJonesFirstAssessment.replace('-', ' ').toUpperCase()}</strong></div>` : ''}</div>
+    <div class="jones-board-head"><span>INVESTIGATION BOARD · PRIVATE</span></div>
     <div class="jones-suspect"><div class="suspect-silhouette"><img src="images/mr-jones.png" alt="Portrait of Mr Jones"></div><h3>MR JONES</h3><p>Husband of the victim</p></div>
     <div class="jones-evidence-grid">${boardCards}</div>${actionPanel}
   </section><p class="jones-message" id="jonesMessage" aria-live="polite">${message}</p></div>`);
@@ -736,21 +646,14 @@ function renderMrJonesEvidenceScene(message = '') {
     if (id !== newItem.target) { renderMrJonesEvidenceScene('That evidence is not affected by this statement. Look again.'); return; }
     mrJonesEvidenceStatus[id] = newItem.status; mrJonesNewEvidenceProgress += 1; saveGame(); renderMrJonesEvidenceScene();
   }));
-  document.querySelectorAll('[data-assessment]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.assessmentMode === 'first') mrJonesAssessmentDraft = button.dataset.assessment;
-    else mrJonesRevisedDraft = button.dataset.assessment;
-    renderMrJonesEvidenceScene();
-  }));
-  document.querySelector('#recordFirstAssessment')?.addEventListener('click', () => { mrJonesFirstAssessment = mrJonesAssessmentDraft; saveGame(); renderMrJonesEvidenceScene(); });
-  document.querySelector('#recordRevisedAssessment')?.addEventListener('click', () => { mrJonesRevisedAssessment = mrJonesRevisedDraft; saveGame(); renderMrJonesEvidenceScene(); });
   document.querySelectorAll('[data-logic-answer]').forEach(button => button.addEventListener('click', () => {
     if (button.dataset.logicAnswer === 'yes') { renderMrJonesEvidenceScene('Not quite. Evidence against a suspect can fail without proving the opposite.'); return; }
-    mrJonesLogicQuestionComplete = true; mrJonesSceneCompleted = true; saveGame(); completeCurrentScene(); renderMrJonesEvidenceScene('Exactly. Weak evidence is not the same as proof of innocence.');
+    mrJonesLogicQuestionComplete = true;
+    mrJonesSceneCompleted = true;
+    saveGame();
+    renderMrJonesEvidenceScene('Weak evidence is not the same as proof of innocence.');
+    completeAndAdvance({ delay: 1200 });
   }));
-  document.querySelector('#jonesInstinct')?.addEventListener('click', () => {
-    const context = mrJonesNewEvidenceProgress || mrJonesFirstAssessment ? { facts: 'Compare each new statement with the exact evidence it affects.', intuition: 'Notice which parts of the story no longer feel as convincing as before.', imagination: 'Could a suspicious detail be true but mean something completely different?', humanNature: 'Do not confuse a suspicious person with a proven murderer.' } : { facts: 'Separate confirmed facts from the conclusions built around them.', intuition: 'Which details make Mr Jones look suspicious, even before they are fully explained?', imagination: 'Several pieces seem to point at Mr Jones — but could they have another explanation?', humanNature: 'Ask what Mr Jones might gain from his wife’s death.' };
-    document.querySelector('#instinctHint').textContent = getDetectiveHint(context);
-  });
 }
 
 const theoryCharacters = [
@@ -771,20 +674,13 @@ const theoryNotes = [
   { id: 'medicineTampered', text: 'Mrs Jones’s medicine may have been tampered with.', owner: 'raymond' }
 ];
 const theoryNoteOrder = ['cornflourMisleading', 'responsible', 'daughterInvolved', 'clarkProtecting', 'methodUnknown', 'medicineTampered', 'clarkLying', 'notSupper', 'jonesGuilty'];
-const theoryChallenges = [
-  { id: 'pender', question: 'What is still missing from this theory?', options: ['A possible motive.', 'An explanation of how the arsenic reached Mrs Jones.', 'Proof that arsenic was found.'], correct: 1, weak: 'The theory identifies a suspect but does not explain the method.' },
-  { id: 'joyce', question: 'What is the biggest problem with this theory?', options: ['There is no convincing evidence that Miss Clark killed Mrs Jones.', 'Miss Clark was not present that evening.', 'Miss Clark inherited £8,000.'], correct: 0, weak: 'Suspicion is not evidence that Miss Clark committed the murder.' },
-  { id: 'petherick', question: 'Where does this theory become speculation?', options: ['There is no proof that Miss Clark agreed to protect Mr Jones.', 'Mr Jones had no access to arsenic.', 'Miss Clark never knew Mrs Jones.'], correct: 0, weak: 'The theory depends on a secret agreement that has not been proved.' },
-  { id: 'raymond', question: 'What is missing from Raymond’s theory?', options: ['A possible way of administering poison.', 'Evidence connecting the doctor’s daughter with the poisoning.', 'Proof that Mrs Jones died.'], correct: 1, weak: 'The proposed method may be possible, but there is no evidence linking the doctor’s daughter to the crime.' }
-];
-
 function renderTheoryDocuments(showSummaries = false) {
   return theoryCharacters.map(character => {
     const assigned = theoryNotes.filter(note => theoryReconstruction[note.id] === character.id);
-    const completed = theoryChallengesCompleted[character.id];
+    const completed = theoryReconstructionCompleted;
     return `<article class="theory-document ${completed ? 'challenged' : ''}" ${showSummaries ? '' : `data-theory-document="${character.id}" tabindex="0" role="button" aria-label="${character.name} theory document"`}>
       <span class="paper-clip" aria-hidden="true"></span><div class="theory-document-heading"><img src="${character.image}" alt="" aria-hidden="true"><h3 class="${character.id === 'joyce' ? 'portrait-only' : ''}">${character.name}</h3></div><p class="theory-notes-label">THEORY NOTES</p>
-      ${showSummaries ? `<p class="theory-summary">${character.summary}</p>` : `<div class="assigned-theory-notes">${assigned.map(note => `<button type="button" class="discussion-note assigned ${theoryReconstructionCorrect[note.id] ? 'fixed' : ''} ${selectedTheoryNote === note.id ? 'selected' : ''}" draggable="${!theoryReconstructionCorrect[note.id]}" data-theory-note="${note.id}">${note.text}</button>`).join('') || '<span class="empty-theory-notes">Place discussion notes here</span>'}</div>`}
+      ${showSummaries ? `<p class="theory-summary">${character.summary}</p>` : `<div class="assigned-theory-notes">${assigned.map(note => `<button type="button" class="discussion-note assigned ${theoryReconstructionCorrect[note.id] ? 'fixed' : ''} ${selectedTheoryNote === note.id ? 'selected' : ''}" draggable="${!theoryReconstructionCorrect[note.id]}" data-theory-note="${note.id}">${note.text}</button>`).join('') || '<span class="empty-theory-notes">Place statements here</span>'}</div>`}
       ${completed ? '<div class="not-proven-stamp">NOT PROVEN</div>' : ''}
     </article>`;
   }).join('');
@@ -828,21 +724,16 @@ function bindTheoriesInteractions() {
     theoryNotes.forEach(note => { if (theoryReconstruction[note.id] === note.owner) theoryReconstructionCorrect[note.id] = true; else { delete theoryReconstruction[note.id]; errors += 1; } });
     if (!errors) {
       theoryReconstructionCompleted = true;
-      theoryChallengeProgress = theoryChallenges.length;
-      theoryChallenges.forEach(challenge => { theoryChallengesCompleted[challenge.id] = true; });
-      activeTheoryChallenge = false;
     }
     saveGame(); renderTheoriesScene(errors ? 'Some details have ended up in the wrong theory. Think back to what each member actually suggested. Read the discussion again if you need to.' : 'The club’s theories have been reconstructed.');
   });
-  document.querySelector('#examineTheory')?.addEventListener('click', () => { activeTheoryChallenge = true; renderTheoriesScene(); });
-  document.querySelectorAll('[data-theory-objection]').forEach(button => button.addEventListener('click', () => {
-    const challenge = theoryChallenges[theoryChallengeProgress];
-    if (Number(button.dataset.theoryObjection) !== challenge.correct) { activeTheoryChallenge = true; renderTheoriesScene('That does not seriously weaken the theory. Look at what has actually been proved.'); return; }
-    theoryChallengesCompleted[challenge.id] = true; theoryChallengeProgress += 1; activeTheoryChallenge = false; saveGame(); renderTheoriesScene(`WEAK POINT — ${challenge.weak} NOT PROVEN.`);
-  }));
   document.querySelectorAll('[data-theories-final]').forEach(button => button.addEventListener('click', () => {
     if (button.dataset.theoriesFinal !== 'b') { renderTheoriesScene('Not quite. A possible explanation is not the same as a proved solution.'); return; }
-    theoriesFinalQuestionComplete = true; theoriesCompleted = true; saveGame(); completeCurrentScene(); renderTheoriesScene('Exactly. A possible explanation is not the same as a proved solution.');
+    theoriesFinalQuestionComplete = true;
+    theoriesCompleted = true;
+    saveGame();
+    renderTheoriesScene('The club has run out of theories. But Miss Marple has noticed something.');
+    completeAndAdvance({ delay: 1200 });
   }));
 }
 
@@ -886,9 +777,8 @@ function bindClueInteractions() {
     clueInferenceSolved = true;
     clueCompleted = true;
     saveGame();
-    completeCurrentScene();
     renderClueScene('A new method is possible.');
-    window.setTimeout(goToNextScene, 650);
+    completeAndAdvance({ delay: 1200 });
   }));
 }
 
@@ -934,7 +824,7 @@ function renderVerdictScene(message = '') {
       <p class="solved-summary">He poisoned the hundreds and thousands used on the trifle. Gladys helped him because she believed he would marry her after Mrs Jones’s death. Mr Jones removed the poisoned decorations from his own portion, while Miss Clark did not eat the trifle because she was banting. Mrs Jones ate the poisoned portion and died.</p>
       <div class="method-confirmed"><article><small>THE POISON</small><span>HUNDREDS AND THOUSANDS</span></article><b>+</b><article><small>THE DISH</small><span>TRIFLE</span></article><strong>METHOD CONFIRMED</strong></div>
       <blockquote>“Miss Marple had noticed the detail everyone else overlooked.”</blockquote>
-      <aside class="final-achievement" aria-label="Achievement unlocked: A Seat at the Table"><img src="../../assets/achievements/tuesday-night-club.png" alt="A Seat at the Table achievement"><div><span>ACHIEVEMENT UNLOCKED</span><strong>A Seat at the Table</strong><p>Case No. 01 complete</p></div></aside>
+      <aside class="final-achievement" aria-label="Achievement earned: A Seat at the Table"><img src="../../assets/achievements/tuesday-night-club.png" alt="A Seat at the Table achievement"><div><span>ACHIEVEMENT EARNED</span><strong>A Seat at the Table</strong><p>Case No. 01 complete</p></div></aside>
       <a class="return-to-archive" href="../../index.html#games">RETURN TO THE ARCHIVE →</a>
     </section>`;
   }
@@ -1089,7 +979,7 @@ reconstructedCrimeScene.description = 'The final pieces are in place. Reconstruc
 reconstructedCrimeScene.render = function renderVerdict() { renderVerdictScene(); };
 
 function renderCurrentScene() {
-  sceneComplete = completedScenes.has(currentScene);
+  sceneComplete = completedScenes.has(currentScene) && replayingScene !== currentScene;
   scenes[currentScene].render();
   updateProgress();
   gameScreen.focus({ preventScroll: true });
@@ -1099,27 +989,50 @@ function completeCurrentScene() {
   if (sceneComplete) return;
   sceneComplete = true;
   completedScenes.add(currentScene);
-  if (replayingScene === currentScene) replayingScene = null;
   maxUnlockedScene = Math.max(maxUnlockedScene, Math.min(currentScene + 1, scenes.length - 1));
   saveGame();
   updateProgress();
   showToast(currentScene === scenes.length - 1 ? 'Расследование завершено' : 'Этап пройден — можно продолжить');
 }
 
+function completeAndAdvance({ delay = 1100 } = {}) {
+  const completedScene = currentScene;
+  const firstCompletion = !completedScenes.has(completedScene);
+  const isReplay = replayingScene === completedScene;
+  completeCurrentScene();
+  if (isReplay) {
+    replayingScene = null;
+    saveGame();
+  }
+  if (!firstCompletion || isReplay || completedScene >= scenes.length - 1) return;
+  window.clearTimeout(autoAdvanceTimer);
+  autoAdvanceTimer = window.setTimeout(() => {
+    if (currentScene === completedScene) goToNextScene();
+  }, delay);
+}
+
+function scrollGameIntoView() {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gameScreen.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+}
+
 function goToNextScene() {
   if (!sceneComplete || currentScene >= scenes.length - 1) return;
   currentScene += 1;
-  saveGame(); renderCurrentScene(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  replayingScene = null;
+  saveGame(); renderCurrentScene(); scrollGameIntoView();
 }
 
 function goToPreviousScene() {
   if (currentScene === 0) return;
+  window.clearTimeout(autoAdvanceTimer);
   currentScene -= 1;
-  saveGame(); renderCurrentScene(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  replayingScene = null;
+  saveGame(); renderCurrentScene(); scrollGameIntoView();
 }
 
 function resetCurrentScene() {
-  completedScenes.delete(currentScene);
+  window.clearTimeout(autoAdvanceTimer);
   sceneComplete = false;
   replayingScene = currentScene;
 
@@ -1127,8 +1040,7 @@ function resetCurrentScene() {
     clubState = { assignments: {}, correct: [], seated: false };
     selectedDescription = null;
   } else if (currentScene === 1) {
-    debateProgress = { currentIndex: 0, recorded: [], part1Complete: false, part2Started: false };
-    gameState.detectiveApproach = null;
+    debateProgress = { currentIndex: 0, recorded: [], part1Complete: false };
     debateCompleted = false;
   } else if (currentScene === 2) {
     caseDinnerGuests = [null, null, null];
@@ -1145,13 +1057,12 @@ function resetCurrentScene() {
     caseDishWords = { lobster: [], trifle: [], breadCheese: [] };
   } else if (currentScene === 3) {
     mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false };
-    mrJonesFirstAssessment = null; mrJonesAssessmentDraft = null; mrJonesNewEvidenceProgress = 0;
+    mrJonesNewEvidenceProgress = 0;
     mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null };
-    mrJonesRevisedAssessment = null; mrJonesRevisedDraft = null; mrJonesLogicQuestionComplete = false; mrJonesSceneCompleted = false;
+    mrJonesLogicQuestionComplete = false; mrJonesSceneCompleted = false;
   } else if (currentScene === 4) {
-    theoryReconstruction = {}; theoryReconstructionCorrect = {}; theoryReconstructionCompleted = false; theoryChallengeProgress = 0;
-    theoryChallengesCompleted = { pender: false, joyce: false, petherick: false, raymond: false };
-    theoriesFinalQuestionComplete = false; theoriesCompleted = false; selectedTheoryNote = null; activeTheoryChallenge = false;
+    theoryReconstruction = {}; theoryReconstructionCorrect = {}; theoryReconstructionCompleted = false;
+    theoriesFinalQuestionComplete = false; theoriesCompleted = false; selectedTheoryNote = null;
   } else if (currentScene === 5) {
     clueMeaningSolved = false; clueHintsOpened = 0; clueSupperConnection = null;
     clueSupperConnectionSolved = false; clueInferenceSolved = false; clueCompleted = false;
@@ -1163,7 +1074,7 @@ function resetCurrentScene() {
 
   saveGame();
   renderCurrentScene();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  scrollGameIntoView();
   showToast(`Этап ${currentScene + 1} начат заново`);
 }
 
@@ -1176,22 +1087,24 @@ function updateProgress() {
     return `<button class="${classes.join(' ')}" data-scene-index="${index}" data-number="0${index + 1}" ${index > maxUnlockedScene ? 'disabled' : ''}>${scene.name}</button>`;
   }).join('');
   stageNav.querySelectorAll('.unlocked').forEach(button => button.addEventListener('click', () => {
-    currentScene = Number(button.dataset.sceneIndex); saveGame(); renderCurrentScene();
+    window.clearTimeout(autoAdvanceTimer);
+    currentScene = Number(button.dataset.sceneIndex);
+    replayingScene = null;
+    saveGame(); renderCurrentScene();
   }));
   previousButton.disabled = currentScene === 0;
-  continueButton.disabled = !sceneComplete || currentScene === scenes.length - 1;
-  continueButton.textContent = currentScene === scenes.length - 1 ? 'Дело завершено ✓' : 'Продолжить →';
+  continueButton.disabled = true;
+  continueButton.textContent = sceneComplete ? 'Completed ✓' : 'Continue →';
   progressText.textContent = `Этап ${currentScene + 1} из ${scenes.length}`;
 }
 
 function saveGame() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScene, maxUnlockedScene, completedScenes: [...completedScenes], clubState, debateProgress, detectiveApproach: gameState.detectiveApproach, debateCompleted,
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScene, maxUnlockedScene, completedScenes: [...completedScenes], clubState, debateProgress, debateCompleted,
     caseDinnerGuests, caseDinnerGuestsComplete, caseDishesExamined, caseDishesReviewed, caseOutcomes, caseOutcomesComplete,
     medicalReportOpened, autopsyReportOpened, caseConfirmedAsMurder, activeDishNote, caseDishWords, replayingScene,
-    mrJonesEvidenceOpened, mrJonesFirstAssessment, mrJonesNewEvidenceProgress, mrJonesEvidenceStatus,
-    mrJonesRevisedAssessment, mrJonesLogicQuestionComplete, mrJonesSceneCompleted,
-    theoryReconstruction, theoryReconstructionCorrect, theoryReconstructionCompleted, theoryChallengeProgress,
-    theoryChallengesCompleted, theoriesFinalQuestionComplete, theoriesCompleted,
+    mrJonesEvidenceOpened, mrJonesNewEvidenceProgress, mrJonesEvidenceStatus, mrJonesLogicQuestionComplete, mrJonesSceneCompleted,
+    theoryReconstruction, theoryReconstructionCorrect, theoryReconstructionCompleted,
+    theoriesFinalQuestionComplete, theoriesCompleted,
     clueMeaningSolved, clueHintsOpened, clueSupperConnection, clueSupperConnectionSolved, clueInferenceSolved, clueCompleted,
     crimeSequence, crimeSequenceSolved, selectivePoisoningSolved, selectiveStatementIndex, bantingNoteOpen,
     gladysMotiveSolved, finalCaseSolution, finalCaseSolved
@@ -1226,11 +1139,9 @@ function loadGame() {
       debateProgress = {
         currentIndex: Math.min(Math.max(Number(saved.debateProgress.currentIndex) || 0, 0), debateEntries.length - 1),
         recorded: Array.isArray(saved.debateProgress.recorded) ? saved.debateProgress.recorded.filter(id => debateEntries.some(entry => entry.id === id)) : [],
-        part1Complete: saved.debateProgress.part1Complete === true,
-        part2Started: saved.debateProgress.part2Started === true
+        part1Complete: saved.debateProgress.part1Complete === true
       };
     }
-    gameState.detectiveApproach = detectiveMethods.some(method => method.id === saved.detectiveApproach) ? saved.detectiveApproach : null;
     debateCompleted = saved.debateCompleted === true;
     caseDinnerGuests = Array.isArray(saved.caseDinnerGuests) && saved.caseDinnerGuests.length === 3 ? saved.caseDinnerGuests : [null, null, null];
     caseDinnerGuestsComplete = saved.caseDinnerGuestsComplete === true;
@@ -1243,13 +1154,10 @@ function loadGame() {
     caseConfirmedAsMurder = saved.caseConfirmedAsMurder === true;
     activeDishNote = dinnerDishes.some(dish => dish.id === saved.activeDishNote) ? saved.activeDishNote : null;
     caseDishWords = { lobster: [], trifle: [], breadCheese: [], ...(saved.caseDishWords || {}) };
-    const assessmentIds = assessmentOptions.map(option => option.id);
     if (saved.mrJonesEvidenceOpened) {
       mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false, ...saved.mrJonesEvidenceOpened };
-      mrJonesFirstAssessment = assessmentIds.includes(saved.mrJonesFirstAssessment) ? saved.mrJonesFirstAssessment : null;
       mrJonesNewEvidenceProgress = Math.min(Math.max(Number(saved.mrJonesNewEvidenceProgress) || 0, 0), 3);
       mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null, ...(saved.mrJonesEvidenceStatus || {}) };
-      mrJonesRevisedAssessment = assessmentIds.includes(saved.mrJonesRevisedAssessment) ? saved.mrJonesRevisedAssessment : null;
       mrJonesLogicQuestionComplete = saved.mrJonesLogicQuestionComplete === true;
       mrJonesSceneCompleted = saved.mrJonesSceneCompleted === true;
     } else {
@@ -1260,8 +1168,6 @@ function loadGame() {
       theoryReconstruction = Object.fromEntries(Object.entries(saved.theoryReconstruction).filter(([noteId, characterId]) => theoryNotes.some(note => note.id === noteId) && theoryCharacters.some(character => character.id === characterId)));
       theoryReconstructionCorrect = Object.fromEntries(Object.entries(saved.theoryReconstructionCorrect || {}).filter(([noteId, correct]) => theoryNotes.some(note => note.id === noteId) && correct === true));
       theoryReconstructionCompleted = saved.theoryReconstructionCompleted === true;
-      theoryChallengeProgress = Math.min(Math.max(Number(saved.theoryChallengeProgress) || 0, 0), 4);
-      theoryChallengesCompleted = { pender: false, joyce: false, petherick: false, raymond: false, ...(saved.theoryChallengesCompleted || {}) };
       theoriesFinalQuestionComplete = saved.theoriesFinalQuestionComplete === true;
       theoriesCompleted = saved.theoriesCompleted === true;
     } else {
@@ -1290,7 +1196,10 @@ function loadGame() {
     } else {
       completedScenes.delete(6);
     }
-    if (debateProgress.recorded.length === debateEntries.length) debateProgress.part1Complete = true;
+    if (debateProgress.recorded.length === debateEntries.length) {
+      debateProgress.part1Complete = true;
+      debateCompleted = true;
+    }
     if (debateCompleted) {
       completedScenes.add(1);
       maxUnlockedScene = Math.max(maxUnlockedScene, 2);
@@ -1335,7 +1244,6 @@ function showToast(message) {
 }
 
 previousButton.addEventListener('click', goToPreviousScene);
-continueButton.addEventListener('click', goToNextScene);
 replaySceneButton.addEventListener('click', () => {
   if (!window.confirm(`Переиграть этап «${scenes[currentScene].name}»? Прогресс только этого этапа будет сброшен.`)) return;
   resetCurrentScene();
@@ -1345,10 +1253,11 @@ document.addEventListener('drop', stopDragAutoScroll);
 document.addEventListener('dragend', stopDragAutoScroll);
 restartButton.addEventListener('click', () => {
   if (!window.confirm('Начать расследование заново? Весь сохранённый прогресс будет удалён.')) return;
-  localStorage.removeItem(STORAGE_KEY); currentScene = 0; maxUnlockedScene = 0; completedScenes = new Set(); clubState = { assignments: {}, correct: [], seated: false }; debateProgress = { currentIndex: 0, recorded: [], part1Complete: false, part2Started: false }; gameState = { detectiveApproach: null }; debateCompleted = false; selectedDescription = null;
+  window.clearTimeout(autoAdvanceTimer);
+  localStorage.removeItem(STORAGE_KEY); currentScene = 0; maxUnlockedScene = 0; completedScenes = new Set(); clubState = { assignments: {}, correct: [], seated: false }; debateProgress = { currentIndex: 0, recorded: [], part1Complete: false }; debateCompleted = false; selectedDescription = null;
   caseDinnerGuests = [null, null, null]; caseDinnerGuestsComplete = false; caseDishesExamined = { lobster: false, trifle: false, breadCheese: false }; caseDishesReviewed = false; caseOutcomes = { mrJones: 'unknown', mrsJones: 'unknown', missClark: 'unknown' }; caseOutcomesComplete = false; medicalReportOpened = false; autopsyReportOpened = false; caseConfirmedAsMurder = false; openSeatMenu = null; activeDishNote = null; caseDishWords = { lobster: [], trifle: [], breadCheese: [] }; replayingScene = null;
-  mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false }; mrJonesFirstAssessment = null; mrJonesAssessmentDraft = null; mrJonesNewEvidenceProgress = 0; mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null }; mrJonesRevisedAssessment = null; mrJonesRevisedDraft = null; mrJonesLogicQuestionComplete = false; mrJonesSceneCompleted = false;
-  theoryReconstruction = {}; theoryReconstructionCorrect = {}; theoryReconstructionCompleted = false; theoryChallengeProgress = 0; theoryChallengesCompleted = { pender: false, joyce: false, petherick: false, raymond: false }; theoriesFinalQuestionComplete = false; theoriesCompleted = false; selectedTheoryNote = null; activeTheoryChallenge = false;
+  mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false }; mrJonesNewEvidenceProgress = 0; mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null }; mrJonesLogicQuestionComplete = false; mrJonesSceneCompleted = false;
+  theoryReconstruction = {}; theoryReconstructionCorrect = {}; theoryReconstructionCompleted = false; theoriesFinalQuestionComplete = false; theoriesCompleted = false; selectedTheoryNote = null;
   clueMeaningSolved = false; clueHintsOpened = 0; clueSupperConnection = null; clueSupperConnectionSolved = false; clueInferenceSolved = false; clueCompleted = false;
   crimeSequence = []; crimeSequenceSolved = false; selectivePoisoningSolved = { mrsJones: false, mrJones: false, missClark: false }; selectiveStatementIndex = 0; bantingNoteOpen = false; gladysMotiveSolved = false; finalCaseSolution = { murderer: null, accomplice: null, method: null, motive: null }; finalCaseSolved = false; renderCurrentScene();
 });

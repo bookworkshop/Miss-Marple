@@ -3,11 +3,9 @@ const achievementList = document.querySelector('#achievementList');
 const achievementDialog = document.querySelector('#achievementDialog');
 const achievementDialogContent = document.querySelector('#achievementDialogContent');
 document.querySelector('.about')?.remove();
-document.querySelectorAll('.game-card:not(.game-card-link)').forEach(card => card.remove());
 const gameGrid = document.querySelector('.game-grid');
-gameGrid?.classList.add('single-case-grid');
 const collectionEyebrow = document.querySelector('.games-section .section-title p');
-if (collectionEyebrow) collectionEyebrow.textContent = 'Case file No. 01';
+if (collectionEyebrow) collectionEyebrow.textContent = 'Three unsolved cases';
 
 function renderArchiveAchievements() {
   if (!window.MysteryAchievements || !achievementSection || !achievementList) return;
