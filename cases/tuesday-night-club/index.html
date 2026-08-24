@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#203329">
+  <title>The Tuesday Night Club — Дело № 01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="game-theme.css">
+  <link rel="stylesheet" href="luxury-theme.css">
+  <link rel="stylesheet" href="noir-case.css">
+  <link rel="stylesheet" href="../../achievements.css">
+</head>
+<body>
+  <header class="case-header">
+    <a class="archive-link" href="../../index.html#games">← Вернуться в архив</a>
+    <div class="case-title">
+      <p>Дело № 01</p>
+      <h1>The Tuesday Night Club</h1>
+    </div>
+    <button class="sound-toggle" id="soundToggle" type="button" aria-label="Включить атмосферный звук" title="Атмосферный звук">♪</button>
+  </header>
+
+  <nav class="stage-nav" id="stageNav" aria-label="Этапы расследования"></nav>
+
+  <div class="case-layout">
+    <aside class="case-file" aria-hidden="true">
+      <span>CONFIDENTIAL</span>
+      <b>01</b>
+      <p>ST. MARY MEAD<br>1932</p>
+    </aside>
+
+    <main id="gameScreen" tabindex="-1"></main>
+  </div>
+
+  <footer class="case-controls">
+    <button class="nav-button secondary" id="previousButton" type="button">← Назад</button>
+    <div class="progress-copy">
+      <span id="progressText">Этап 1 из 7</span>
+      <button id="replaySceneButton" type="button">Переиграть этот этап</button>
+      <button id="restartButton" type="button">Начать расследование заново</button>
+    </div>
+    <button class="nav-button primary" id="continueButton" type="button" disabled>Продолжить →</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="../../achievements.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+:root{
+  --lux-green:#12271f;
+  --lux-green-2:#1c382d;
+  --lux-gold:#b88a45;
+  --lux-gold-light:#d6b36e;
+  --lux-paper:#ead7b1;
+  --lux-paper-light:#f4e5c5;
+  --lux-ink:#2c261d;
+  --lux-burgundy:#743e36;
+}
+
+body{
+  background:#101c17 url("images/detective-archive-backdrop.png") center top/cover fixed no-repeat;
+  color:var(--lux-ink);
+}
+body:before{opacity:.14;mix-blend-mode:soft-light}
+
+.case-header{
+  min-height:66px;
+  padding:10px clamp(28px,4vw,70px);
+  border-bottom:1px solid #8f6a35;
+  background:linear-gradient(90deg,#ead8b7,#f4e6c8 48%,#ead8b7);
+  box-shadow:0 5px 18px #050a0773;
+}
+.case-title{display:flex;align-items:center;gap:18px}.case-title p{margin:2px 0 0}.case-title h1{margin:0;font-size:38px}.archive-link{font-size:12px;letter-spacing:.12em}.sound-toggle{width:38px;height:38px;border-color:#6e5839;box-shadow:inset 0 0 0 3px #ead6b3}
+
+.stage-nav{
+  min-height:50px;
+  padding-inline:clamp(20px,4vw,65px);
+  border-bottom:1px solid #98713a;
+  background:linear-gradient(90deg,#0c1d17,#173127 50%,#0c1d17);
+  box-shadow:0 7px 18px #050a077d;
+}
+.stage-step{min-height:50px;color:#b9a17199}.stage-step.unlocked{color:#ead9b7}.stage-step.current{background:linear-gradient(#ffffff08,#ffffff03);border-bottom-color:#c99548}.stage-step.completed:after{color:#d4a957}
+
+.case-layout{
+  position:relative;
+  display:block;
+  width:100%;
+  max-width:none;
+  margin:0 auto;
+  padding:34px clamp(150px,12vw,230px) 54px;
+}
+.case-layout:before{
+  content:"";
+  position:absolute;
+  inset:14px 18px 20px;
+  z-index:0;
+  border:1px solid #a67d3f;
+  outline:1px solid #2a4236;
+  outline-offset:-7px;
+  pointer-events:none;
+}
+.case-layout:after{content:"✦";position:absolute;z-index:1;left:50%;top:18px;color:#c89b50;font-size:20px;transform:translateX(-50%)}
+.case-file{position:absolute;z-index:3;left:clamp(34px,4vw,72px);top:58px;width:112px;background:#d9c49e;box-shadow:8px 12px 22px #0508059e;transform:rotate(-4deg)}
+
+#gameScreen{
+  position:relative;
+  z-index:2;
+  width:min(1240px,100%);
+  min-height:650px;
+  margin:0 auto;
+  padding:clamp(35px,4vw,60px);
+  border:2px solid #8d6938;
+  outline:8px solid var(--lux-green);
+  outline-offset:-12px;
+  background-color:var(--lux-paper);
+  background-image:linear-gradient(#775b3709 1px,transparent 1px),linear-gradient(90deg,#775b3709 1px,transparent 1px),radial-gradient(circle at 84% 8%,#fff2ca75,transparent 27%),radial-gradient(circle at 10% 92%,#7c5a2d16,transparent 22%);
+  background-size:28px 28px,28px 28px,auto,auto;
+  box-shadow:0 0 0 2px #c49a55,0 20px 45px #050805b8,inset 0 0 55px #79532227;
+}
+#gameScreen:before{inset:18px;border:1px solid #9b78466e;box-shadow:inset 0 0 0 4px #ead7b1}
+.scene:before,.scene:after{content:"❧";position:absolute;top:-14px;color:#9b743d;font-size:21px}.scene:before{left:-18px}.scene:after{right:-18px;transform:scaleX(-1)}
+.scene-kicker{color:#73423a;font-size:10px}.scene h2{color:#282219;text-shadow:0 1px #fff0cf}.scene-intro{color:#514534}.rule{color:#a27b42}.rule:before,.rule:after{background:linear-gradient(90deg,transparent,#8b6837 18%,#8b6837 82%,transparent)}
+
+/* Shared premium paper and frames */
+.paper-panel,.matching-board,.minutes-sheet,.case-task,.jones-action-panel,.document,.invitation{
+  border-color:#846238;
+  background-color:var(--lux-paper-light);
+  box-shadow:0 7px 16px #291b1042,inset 0 0 28px #9b713026;
+}
+.action-button,.minutes-button,.case-action,.identified-button,.nav-button.primary{
+  border:1px solid #c0944c;
+  outline:3px solid var(--lux-green);
+  outline-offset:2px;
+  background:linear-gradient(#193329,#0f241c);
+  color:#ead7b0;
+  box-shadow:inset 0 0 0 3px #10261e,0 6px 14px #24170e59;
+}
+.action-button:hover,.minutes-button:hover,.case-action:hover:not(:disabled),.identified-button:hover{background:linear-gradient(#26483a,#153126);color:#f6e7c8}
+
+/* Club */
+.matching-board{padding:24px;border:1px solid #846238;outline:6px solid var(--lux-green);outline-offset:-9px}.guest-card{border:1px solid #a77f42;background:linear-gradient(#203d31,#142c23);box-shadow:0 8px 16px #27190f66}.guest-card h3{color:#efddba}.guest-portrait{border-color:#c39a55}.description-slot{background:#ead7b2;border-color:#9a7749}.description-bank{border:1px solid #7d5e38;background:#d8bd8f;box-shadow:5px 8px 16px #281a1040}.description-slip{box-shadow:2px 4px 8px #32211635}
+
+/* Debate */
+.minutes-sheet{outline:8px solid var(--lux-green);outline-offset:-11px;box-shadow:0 0 0 2px #b88a45,0 15px 30px #25170e66,inset 0 0 35px #9a6e2b20}.minutes-ribbon{background:linear-gradient(#1c3a2e,#10271f)}.minutes-ledger{background:#dbc29a;border-color:#775936}.debate-entry{background:#f0dfbf;border-color:#8e6c3f}.debate-options button,.method-options button{background:#dec398;border-color:#87663c}.debate-options button:hover,.method-options button:hover{background:#ead4ab}.minutes-emblem{border-color:#bd914a;box-shadow:0 0 0 6px #173127,0 0 0 8px #bd914a,0 8px 17px #24170e7d}
+
+/* Case */
+.case-reconstruction{border-color:#bd914a;outline:1px solid #d1a85f;outline-offset:-8px;box-shadow:0 16px 32px #180f096e}.case-task{outline:1px solid #9b7949;outline-offset:-13px}.case-part span{background:linear-gradient(#204034,#122a21);border-color:#c09550}.serving-dish,.seat-button strong,.dish-word-puzzle,.medical-file,.autopsy-file{box-shadow:5px 8px 16px #281a104d}.murder-question{background:linear-gradient(#1d3b30,#10271f);box-shadow:9px 13px 24px #160d087d}
+
+/* Evidence */
+.jones-board{border-color:#bf9149!important;outline-color:#11291f!important;box-shadow:0 0 0 2px #d0a85d,0 17px 34px #160e0875,inset 0 0 55px #24170e78!important}.jones-evidence-card{min-height:290px!important;border-color:#86633a!important;box-shadow:5px 8px 15px #25170e59!important}.jones-evidence-card.reconsidered small{bottom:52px!important;line-height:1.1}.jones-suspect{box-shadow:8px 11px 20px #21140c73!important}.jones-action-panel{outline:4px solid #173027;outline-offset:-7px}
+
+/* Clue and verdict */
+.comparison{padding:24px;border:1px solid #a17a42;outline:7px solid var(--lux-green);outline-offset:-10px;background:#c8a978;box-shadow:0 13px 25px #1f130c66}.document{border-color:#8b673d;background:#f1dfbd;box-shadow:5px 8px 15px #28190f52}.verdict-form{padding:25px;border:1px solid #9c7744;outline:7px solid var(--lux-green);outline-offset:-10px;background:#dfc89f;box-shadow:0 13px 25px #1f130c66}.verdict-form select{border-color:#89663b;background:#f4e4c3}.success{border:1px solid #9e7844;outline:7px solid var(--lux-green);outline-offset:-10px;background:#ecd9b4;box-shadow:0 13px 25px #1f130c66}
+
+.case-controls{
+  min-height:72px;
+  border-top:1px solid #9e783e;
+  background:linear-gradient(90deg,#0c1b16,#172b23 50%,#0c1b16);
+  color:#d9c39c;
+  box-shadow:0 -8px 22px #05080587;
+}
+.nav-button.secondary{border-color:#a37b3f;color:#d8bf91;background:#13271f}.progress-copy button{color:#d0ad69!important}.progress-copy>span{color:#ead8b6}.nav-button.primary:disabled{background:#4a5142;color:#d7c49f}
+
+@media(max-width:1050px){
+  .case-layout{padding-inline:70px}.case-file{display:none}#gameScreen{width:100%}
+}
+@media(max-width:800px){
+  body{background-attachment:scroll}.case-header{padding:12px 18px}.case-title{display:block}.case-title h1{font-size:34px}.case-layout{padding:28px 24px 40px}.case-layout:before{inset:8px}.scene:before,.scene:after{display:none}
+}
+@media(max-width:520px){
+  .case-layout{padding:20px 10px 30px}#gameScreen{min-height:500px;padding:32px 20px;outline-width:5px;outline-offset:-8px}.case-header{min-height:78px}.case-title h1{font-size:31px}.matching-board,.comparison,.verdict-form{padding:15px}.case-controls{min-height:70px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* THE THEORIES — reading comprehension on the club table */
+.stage-nav{grid-template-columns:repeat(7,1fr)}
+.theories-table{position:relative;padding:25px;border:2px solid #b78a49;outline:8px solid #142d24;outline-offset:-11px;background:#7a5737;background-image:radial-gradient(circle at 50% 25%,#bc956563,transparent 42%),linear-gradient(90deg,#291c1440,#ffffff08 50%,#291c1440);box-shadow:0 15px 30px #1b10096b,inset 0 0 45px #24160d78}.theories-table:before{content:"";position:absolute;inset:17px;border:1px solid #dfb66d59;pointer-events:none}.theories-table>header{position:relative;z-index:2;display:flex;align-items:flex-start;gap:20px;margin-bottom:22px;padding:16px 20px;border:1px solid #87663e;background:#ead7b1;box-shadow:4px 7px 14px #25170e4d}.theories-table>header>span{padding:7px 11px;border:1px solid #bd914c;background:#173229;color:#e8d6b4;font:600 9px Manrope,sans-serif;letter-spacing:.15em}.theories-table>header h3{margin:0;font:600 24px "Cormorant Garamond",serif;letter-spacing:.1em}.theories-table>header p{margin:5px 0 0;font:17px/1.3 "Cormorant Garamond",serif}.theory-documents{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.theory-document{position:relative;min-height:300px;padding:26px 16px 18px;border:1px solid #7a5935;background:#ead7b1;color:#30271e;box-shadow:5px 8px 15px #21140c63;text-align:left;transform:rotate(-.45deg);transition:transform .2s}.theory-document:nth-child(even){transform:rotate(.55deg)}.theory-document:focus-visible,.theory-document.drag-over{outline:3px solid #d4aa5f;outline-offset:3px;transform:translateY(-3px)}.paper-clip{position:absolute;right:17px;top:-8px;width:13px;height:40px;border:2px solid #846d50;border-radius:8px;transform:rotate(8deg)}.theory-document h3{margin:0 22px 9px 0;padding-bottom:8px;border-bottom:3px double #775b39;font:600 18px "Cormorant Garamond",serif;letter-spacing:.06em}.theory-notes-label{margin:0 0 11px;color:#713f36;font:600 8px Manrope,sans-serif;letter-spacing:.15em}.assigned-theory-notes{display:grid;gap:8px}.empty-theory-notes{display:grid;place-items:center;min-height:170px;border:1px dashed #96784f;color:#75674f;font:italic 14px "Cormorant Garamond",serif}.discussion-bank{position:relative;z-index:2;margin:24px 0 18px;padding:20px;border:1px solid #87643b;background:#d2b486;box-shadow:4px 7px 14px #21140c4d}.discussion-bank>h3{margin:0 0 14px;text-align:center;font:600 17px "Cormorant Garamond",serif;letter-spacing:.16em}.discussion-bank>div{display:flex;flex-wrap:wrap;justify-content:center;gap:9px}.discussion-note{padding:10px 12px;border:1px solid #81613b;background:#f0dfbd;color:#30281f;box-shadow:2px 4px 8px #281a103d;font:600 14px/1.2 "Cormorant Garamond",serif;text-align:left;cursor:pointer;transform:rotate(-.5deg);transition:.18s}.discussion-note:nth-child(even){transform:rotate(.7deg)}.discussion-note:hover,.discussion-note:focus-visible,.discussion-note.selected{outline:2px solid #173229;outline-offset:2px;transform:translateY(-2px)}.discussion-note.selected:after{content:"SELECTED";display:block;margin-top:5px;color:#5d6d52;font:600 7px Manrope,sans-serif;letter-spacing:.13em}.discussion-note.fixed{cursor:default}.discussion-note.fixed:after{content:"FIXED";display:block;margin-top:5px;color:#596a50;font:600 7px Manrope,sans-serif;letter-spacing:.13em}.assigned-theory-notes .discussion-note{width:100%;font-size:13px}.theory-action{position:relative;z-index:3;display:block;margin:17px auto 0;padding:12px 22px;border:1px solid #c0944c;outline:3px solid #173229;outline-offset:2px;background:linear-gradient(#1d3b30,#10271f);color:#ead7b0;font:600 10px Manrope,sans-serif;letter-spacing:.13em;cursor:pointer}.theory-action:disabled{opacity:.42;cursor:not-allowed}.theories-message{min-height:25px;margin:14px 0 0;color:#713f36;font:italic 17px "Cormorant Garamond",serif;text-align:center}.theory-summary{font:17px/1.35 "Cormorant Garamond",serif}.theory-documents.compact .theory-document{min-height:230px}.not-proven-stamp{position:absolute;left:50%;bottom:18px;padding:7px 10px;border:4px double #713f36;color:#713f36;font:600 9px Manrope,sans-serif;letter-spacing:.12em;transform:translateX(-50%) rotate(-5deg)}.theory-transition{position:relative;z-index:2;max-width:650px;margin:25px auto 0;padding:22px;border:1px solid #80603a;background:#ead7b1;text-align:center;box-shadow:4px 7px 14px #21140c4d}.theory-transition p{margin:0;font:18px "Cormorant Garamond",serif}.theory-transition h3{margin:4px 0;font:600 30px "Cormorant Garamond",serif}.theory-challenge-card,.theories-final-question{position:relative;z-index:2;max-width:800px;margin:25px auto 0;padding:25px;border:1px solid #80603a;outline:5px solid #173229;outline-offset:-8px;background:#ead7b1;box-shadow:5px 9px 17px #21140c63}.theory-challenge-card blockquote{margin:10px 0 20px;padding:13px 17px;border-block:1px solid #8d7049;font:600 20px/1.3 "Cormorant Garamond",serif;text-align:center}.theory-challenge-card>h3,.theories-final-question>h3{font:600 26px "Cormorant Garamond",serif}.challenge-options{display:grid;gap:10px}.challenge-options button{display:grid;grid-template-columns:31px 1fr;gap:8px;padding:13px 15px;border:1px solid #80613d;background:#dec49b;color:#30281f;font:16px/1.25 "Cormorant Garamond",serif;text-align:left;cursor:pointer}.challenge-options button:hover,.challenge-options button:focus-visible{outline:2px solid #173229;outline-offset:2px;background:#ead5ad}.challenge-options button span{font-weight:600;color:#70483d}.four-theories-stamp{position:relative;z-index:2;width:max-content;margin:28px auto;padding:9px 14px;border:4px double #713f36;background:#dfc9a2;color:#713f36;font:600 12px/1.4 Manrope,sans-serif;letter-spacing:.14em;text-align:center;transform:rotate(-2deg)}.theories-ending{position:relative;z-index:2;max-width:700px;margin:25px auto 0;padding:26px;border:1px solid #88663d;background:#ead7b1;text-align:center}.theories-ending h3{margin:0;font:600 33px "Cormorant Garamond",serif}.theories-ending p{font:italic 20px "Cormorant Garamond",serif}
+@media(max-width:980px){.theory-documents{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.stage-nav{grid-template-columns:repeat(7,110px)}}
+@media(max-width:560px){.theories-table{padding:20px 13px}.theories-table>header{display:block}.theories-table>header>span{display:inline-block;margin-bottom:12px}.theory-documents{grid-template-columns:1fr}.theory-document{min-height:220px;transform:none!important}.discussion-bank>div{display:grid}.discussion-note{width:100%;transform:none}.theory-documents.compact .theory-document{min-height:210px}.theory-challenge-card,.theories-final-question{padding:20px 15px}.challenge-options button{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.theory-document,.discussion-note{transition:none}}
+/* Persist the most recently identified weak point between theory challenges. */
+.theory-document-heading{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:9px;margin:0 22px 9px 0;padding-bottom:8px;border-bottom:3px double #775b39}.theory-document-heading img{width:36px;height:36px;border:1px solid #7a5935;border-radius:50%;object-fit:cover;object-position:center 22%;filter:sepia(.28) contrast(.94);box-shadow:0 2px 5px #2d1d123d}.theory-document .theory-document-heading h3{margin:0;padding:0;border:0;font-size:16px;line-height:1.05}
+.weak-point-result{margin:0 auto 18px;padding:14px 18px;border-block:1px solid #8d7049}.weak-point-result span{color:#713f36;font:600 9px Manrope,sans-serif;letter-spacing:.16em}.weak-point-result p{margin:7px auto 10px;max-width:520px;font:600 19px/1.3 "Cormorant Garamond",serif}.weak-point-result strong{display:inline-block;padding:5px 9px;border:3px double #713f36;color:#713f36;font:600 8px Manrope,sans-serif;letter-spacing:.13em;transform:rotate(-2deg)}

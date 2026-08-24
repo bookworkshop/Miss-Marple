@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8dbc0">
+  <title>The Mystery Archive — Game Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="hero.css">
+  <link rel="stylesheet" href="hero-compact.css">
+  <link rel="stylesheet" href="header-compact.css">
+  <link rel="stylesheet" href="collection-overrides.css">
+  <link rel="stylesheet" href="noir-archive.css">
+  <link rel="stylesheet" href="achievements.css">
+</head>
+<body>
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">A private collection of investigations</p>
+        <p class="hero-english">Miss Marple <em>investigates</em></p>
+        <h1>Mystery<br><em>Archive</em></h1>
+        <div class="hero-flourish"><span></span><b>◆</b><span></span></div>
+        <p class="lead">Observe. Compare. Draw conclusions.<br>Every mystery has a story.</p>
+        <a class="primary-btn" href="#games">Begin your investigation <span>→</span></a>
+      </div>
+      <span class="hero-seal" aria-hidden="true">PRIVATE<br>ARCHIVE<br><b>1934</b></span>
+    </section>
+
+    <section class="games-section" id="games">
+      <div class="section-title"><span></span><div><p>Three unsolved cases</p><h2>Choose an investigation</h2></div><span></span></div>
+      <div class="game-grid">
+        <a class="game-card game-card-link" href="./cases/tuesday-night-club/index.html" aria-label="Open The Tuesday Night Club case">
+          <div class="case-tab">Case No. 01</div>
+          <div class="card-image"><img src="assets/tuesday-night-supper.png" alt="Three guests gathered around a tense candlelit supper"><span class="duration">15–20 min.</span></div>
+          <div class="card-copy"><p class="genre">Interactive investigation</p><h3>The Tuesday Night Club</h3><p>Join the Tuesday Night Club, examine the circumstances of Mrs Jones’s death and uncover the method of poisoning.</p><span class="card-cta">Open the case <span>→</span></span></div>
+        </a>
+        <article class="game-card featured" data-game="clues" tabindex="0">
+          <div class="case-tab">Case No. 02</div><span class="pin">Recommended</span>
+          <div class="card-image"><img src="assets/mirror.png" alt="A cracked mirror, pearls and a sealed letter"><span class="duration">2–4 min.</span></div>
+          <div class="card-copy"><h3>The Idol House of Astarte</h3><p>Examine the crime scene and find the details hidden among ancient relics.</p><button type="button">Begin the case <span>→</span></button></div>
+        </article>
+        <article class="game-card" data-game="cipher" tabindex="0">
+          <div class="case-tab">Case No. 03</div>
+          <div class="card-image"><img src="assets/train.png" alt="A night train among mountains and mist"><span class="duration">3–6 min.</span></div>
+          <div class="card-copy"><h3>Ingots of Gold</h3><p>Decipher the secret message and discover where the shipment of gold disappeared.</p><button type="button">Begin the case <span>→</span></button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="about" id="about"><span class="quote-mark">“</span><blockquote>The truth rarely lies on the surface.<br><em>But it always leaves a trace.</em></blockquote><p>— From a private detective’s notebook</p></section>
+    <section class="archive-achievements" id="achievements" aria-labelledby="achievementsTitle" hidden>
+      <h2 class="achievement-section-heading" id="achievementsTitle">ARCHIVE ACHIEVEMENTS</h2>
+      <div class="achievement-list" id="achievementList"></div>
+    </section>
+  </main>
+
+  <footer id="footer"><a class="brand" href="#top"><span>Mystery</span> <em>Archive</em></a><p>Small stories for curious minds.</p><p>© 2026 Private Collection</p></footer>
+
+  <dialog class="game-modal" aria-labelledby="game-title">
+    <button class="close-modal" type="button" aria-label="Close">×</button>
+    <div class="modal-head"><p id="game-label">Case</p><h2 id="game-title">Game title</h2><p id="game-intro"></p></div>
+    <div id="game-stage" class="game-stage"></div>
+    <div class="game-status"><span id="game-progress"></span><button id="restart-game" type="button">Restart</button></div>
+  </dialog>
+  <dialog class="achievement-dialog" id="achievementDialog" aria-labelledby="achievementDialogTitle">
+    <div class="achievement-dialog-inner" id="achievementDialogContent"></div>
+  </dialog>
+  <script src="achievements.js"></script>
+  <script src="archive-achievements.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+*.backup
+*.backup.*
+*.final-screen.backup
+*.remove-header.backup
+*.supper-cover.backup
+Thumbs.db
+.DS_Store

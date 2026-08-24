@@ -1,0 +1,68 @@
+/* Half-height illustrated cover on the main page. */
+.hero {
+  min-height: 325px;
+  padding-block: 20px;
+}
+
+.hero-copy {
+  width: min(520px, 48vw);
+}
+
+.hero h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(40px, 4.7vw, 68px);
+  line-height: .72;
+}
+
+.hero-english {
+  margin-top: 7px;
+  font-size: clamp(18px, 1.8vw, 27px);
+}
+
+.hero-flourish {
+  margin-block: 6px 8px;
+}
+
+.hero .lead {
+  margin-block: 7px;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.hero .primary-btn {
+  margin-top: 8px;
+  padding: 11px 18px;
+  font-size: 13px;
+}
+
+.hero-seal {
+  bottom: 18px;
+  padding: 8px 11px;
+  font-size: 8px;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 340px;
+    padding-block: 20px;
+  }
+
+  .hero-copy {
+    padding-block: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 360px;
+    padding-block: 18px 24px;
+  }
+
+  .hero-copy {
+    padding-block: 16px;
+  }
+
+  .hero h1 {
+    font-size: 43px;
+  }
+}
