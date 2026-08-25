@@ -448,7 +448,7 @@ function renderDebateScene(message = '') {
       debateProgress.part1Complete = true;
       debateCompleted = true;
       saveGame();
-      completeAndAdvance({ delay: 900 });
+      completeAndAdvance({ delay: 900, forceAdvance: true });
       return;
     }
     debateProgress.currentIndex += 1;
@@ -993,7 +993,7 @@ function completeCurrentScene() {
   showToast(currentScene === scenes.length - 1 ? 'Расследование завершено' : 'Этап пройден — можно продолжить');
 }
 
-function completeAndAdvance({ delay = 1100 } = {}) {
+function completeAndAdvance({ delay = 1100, forceAdvance = false } = {}) {
   const completedScene = currentScene;
   const firstCompletion = !completedScenes.has(completedScene);
   const isReplay = replayingScene === completedScene;
@@ -1002,7 +1002,8 @@ function completeAndAdvance({ delay = 1100 } = {}) {
     replayingScene = null;
     saveGame();
   }
-  if (!firstCompletion || isReplay || completedScene >= scenes.length - 1) return;
+  if ((!firstCompletion || isReplay) && !forceAdvance) return;
+  if (completedScene >= scenes.length - 1) return;
   window.clearTimeout(autoAdvanceTimer);
   autoAdvanceTimer = window.setTimeout(() => {
     if (currentScene === completedScene) goToNextScene();
