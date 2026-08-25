@@ -41,6 +41,11 @@ body::before { opacity:.09; }
 .preview-window .card-image { height:100%; min-height:250px; }
 .preview-window:hover { transform:none; box-shadow:0 8px 20px rgba(0,0,0,.42),inset 0 0 0 1px rgba(169,134,75,.13); }
 .preview-window:hover img { transform:none; filter:saturate(.88) contrast(.97) brightness(.82); }
+.preview-status { position:relative; padding:17px 15px 15px; text-align:center; color:#d8c49b; }
+.preview-status::before { content:""; display:block; width:44px; margin:0 auto 12px; border-top:1px solid rgba(169,134,75,.58); }
+.preview-status span { display:block; color:#a9864b; font:600 8px Manrope,sans-serif; letter-spacing:.2em; }
+.preview-status strong { display:block; margin-top:6px; color:#ead8b3; font:600 21px/1.05 "Cormorant Garamond",serif; text-transform:uppercase; letter-spacing:.035em; }
+.preview-status p { margin:7px 0 0; color:#ad9b78; font:italic 14px/1.25 "Cormorant Garamond",serif; }
 
 .archive-achievements { padding-block:38px 48px; }
 .archive-achievements::before { opacity:.42; }
