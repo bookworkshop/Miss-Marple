@@ -210,15 +210,18 @@ body::before { opacity:.08; }
 .discussion-note { max-width:280px; border:1px solid var(--archive-line)!important; background:var(--archive-paper-light)!important; box-shadow:var(--archive-shadow-paper)!important; }
 .theories-final-question { border:1px solid var(--archive-line); outline:0; box-shadow:var(--archive-shadow-paper); }
 
-/* Clue: the quietest screen. */
-.scene[data-scene="clue"] { max-width:900px; margin-inline:auto; }
-.clue-desk { padding:20px; border:0; background:transparent; box-shadow:none; }
+/* Clue: quiet, but wide enough to keep the evidence readable. */
+.case-layout:has(.scene[data-scene="clue"]) { width:min(1380px,calc(100% - 24px)); }
+.scene[data-scene="clue"] { max-width:1180px; margin-inline:auto; }
+.clue-desk { padding:10px; border:0; background:transparent; box-shadow:none; }
 .clue-desk::before { display:none; }
-.clue-letter-stage { grid-template-columns:minmax(0,1.3fr) minmax(220px,.7fr); gap:28px; }
-.clue-letter { min-height:250px; padding:34px 38px; }
-.clue-letter-copy { margin-top:42px; font-size:clamp(29px,4vw,42px); }
-.clue-reminder { padding:18px; border:0; border-left:1px solid var(--archive-gold); background:transparent; box-shadow:none; }
-.clue-question-card,.clue-look-back,.clue-finale { max-width:760px; border:0; box-shadow:var(--archive-shadow-paper)!important; }
+.clue-letter-stage { grid-template-columns:minmax(0,1.45fr) minmax(250px,.55fr); gap:20px; max-width:1100px; margin-inline:auto; }
+.clue-letter { min-height:230px; padding:26px 30px; }
+.clue-letter-copy { margin-top:34px; font-size:clamp(29px,4vw,42px); }
+.clue-reminder { padding:16px 18px; border:0; border-left:1px solid var(--archive-gold); background:rgba(232,217,187,.82); color:#3e3327; box-shadow:none; }
+.clue-reminder p { color:#3e3327!important; }
+.clue-reminder strong { color:#203329!important; border-top-color:rgba(92,70,43,.42)!important; }
+.clue-question-card,.clue-look-back,.clue-finale { max-width:980px; margin-top:18px; padding:22px 26px; border:0; box-shadow:var(--archive-shadow-paper)!important; }
 .clue-supper-card { min-height:190px; border:0; box-shadow:var(--archive-shadow-paper); }
 .clue-supper-card img { height:145px; }
 .clue-final-pair article { border:0; box-shadow:var(--archive-shadow-paper); }
