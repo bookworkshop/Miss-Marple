@@ -820,7 +820,7 @@ function renderVerdictScene(message = '') {
       <p class="solved-summary">He poisoned the hundreds and thousands used on the trifle. Gladys helped him because she believed he would marry her after Mrs Jones’s death. Mr Jones removed the poisoned decorations from his own portion, while Miss Clark did not eat the trifle because she was banting. Mrs Jones ate the poisoned portion and died.</p>
       <div class="method-confirmed"><article><small>THE POISON</small><span>HUNDREDS AND THOUSANDS</span></article><b>+</b><article><small>THE DISH</small><span>TRIFLE</span></article><strong>METHOD CONFIRMED</strong></div>
       <blockquote>“Miss Marple had noticed the detail everyone else overlooked.”</blockquote>
-      <aside class="final-achievement" aria-label="Achievement earned: A Seat at the Table"><img src="../../assets/achievements/tuesday-night-club.png" alt="A Seat at the Table achievement"><div><span>ACHIEVEMENT EARNED</span><strong>A Seat at the Table</strong><p>Case No. 01 complete</p></div></aside>
+      <aside class="final-achievement" aria-label="Achievement earned: A Seat at the Table"><img src="../../assets/achievements/tuesday-night-club-v2.png" alt="A Seat at the Table achievement"><div><span>ACHIEVEMENT EARNED</span><strong>A Seat at the Table</strong><p>Case No. 01 complete</p></div></aside>
       <a class="return-to-archive" href="../../index.html#games">RETURN TO THE ARCHIVE →</a>
     </section>`;
   }

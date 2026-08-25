@@ -9,7 +9,7 @@
       description: 'Solved the mystery of Mrs Jones and completed the first case of the Tuesday Night Club.',
       notification: 'You solved the first mystery of the Tuesday Night Club.',
       caseNumber: '01',
-      badge: 'assets/achievements/tuesday-night-club.png',
+      badge: 'assets/achievements/tuesday-night-club-v2.png',
       caseUrl: 'cases/tuesday-night-club/index.html'
     }
   };
