@@ -235,9 +235,11 @@ body::before { opacity:.08; }
 .case-solved-finale { text-align:center; }
 .case-solved-finale h3 { margin-block:22px 14px; font-size:clamp(46px,6vw,72px); }
 .case-solved-stamp { width:112px; height:112px; }
-.final-achievement { grid-template-columns:58px 1fr; width:min(360px,100%); padding:10px 12px; border:0; border-top:1px solid rgba(169,134,75,.54); background:transparent; box-shadow:none; }
+.final-achievement { grid-template-columns:58px 1fr; width:min(360px,100%); padding:10px 12px; border:0; border-top:1px solid rgba(92,70,43,.42); background:transparent; color:var(--archive-ink); box-shadow:none; }
 .final-achievement img { width:58px; }
-.final-achievement strong { font-size:20px; }
+.final-achievement span { color:var(--archive-burgundy); }
+.final-achievement strong { color:var(--archive-green); font-size:20px; }
+.final-achievement p { color:#594b39!important; }
 
 /* Compact utility controls. */
 .case-controls { min-height:58px; padding:8px clamp(14px,4vw,54px); box-shadow:0 -4px 14px rgba(0,0,0,.34); }
