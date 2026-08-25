@@ -37,6 +37,10 @@ body::before { opacity:.09; }
 .card-copy { padding:18px 15px 14px; }
 .card-copy h3 { margin-block:7px 10px; }
 .card-cta,.card-copy button { padding:10px 2px 3px; border:0; border-bottom:1px solid rgba(169,134,75,.64); background:transparent; }
+.preview-window { align-self:start; cursor:default; }
+.preview-window .card-image { height:100%; min-height:250px; }
+.preview-window:hover { transform:none; box-shadow:0 8px 20px rgba(0,0,0,.42),inset 0 0 0 1px rgba(169,134,75,.13); }
+.preview-window:hover img { transform:none; filter:saturate(.88) contrast(.97) brightness(.82); }
 
 .archive-achievements { padding-block:38px 48px; }
 .archive-achievements::before { opacity:.42; }
