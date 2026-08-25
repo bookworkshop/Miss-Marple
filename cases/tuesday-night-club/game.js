@@ -549,7 +549,6 @@ function renderCaseScene(message = '') {
         <article class="autopsy-file opened"><span>POST-MORTEM REPORT</span><strong>ARSENIC FOUND</strong><dl class="report-facts"><div><dt>Subject</dt><dd>Mrs Jones</dd></div><div><dt>Finding</dt><dd>Arsenic</dd></div><div><dt>Cause of death</dt><dd>Arsenical poisoning</dd></div></dl><small>The post-mortem examination showed that Mrs Jones had died of arsenical poisoning.</small></article>
       </div>
       ${!caseConfirmedAsMurder ? `<aside class="murder-question"><span>YOUR CONCLUSION</span><h3>Was it a murder?</h3><div><button type="button" data-murder-answer="yes">YES</button><button type="button" data-murder-answer="no">NO</button></div></aside>` : ''}
-      ${caseConfirmedAsMurder ? '<div class="case-revelation" aria-live="polite"><span>MURDER CONFIRMED</span><h3>The supper was not an accident.</h3><p>Sir Henry now has a murder to explain.</p></div>' : ''}
     </section>`;
   }
 
@@ -582,8 +581,7 @@ function renderCaseScene(message = '') {
     if (button.dataset.murderAnswer === 'no') { renderCaseScene('Arsenic was found after an apparent case of food poisoning. Examine the reports again.'); return; }
     caseConfirmedAsMurder = true;
     saveGame();
-    renderCaseScene('MURDER CONFIRMED');
-    completeAndAdvance({ delay: 1500 });
+    completeAndAdvance({ delay: 900, forceAdvance: true });
   }));
 }
 
