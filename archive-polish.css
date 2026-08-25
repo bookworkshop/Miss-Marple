@@ -1,0 +1,55 @@
+/* Final archive polish. This file only resolves presentation after the legacy themes. */
+:root {
+  --archive-paper: #e8d9bb;
+  --archive-paper-light: #f3e7cd;
+  --archive-paper-dark: #cfb98f;
+  --archive-ink: #29251d;
+  --archive-green: #182b22;
+  --archive-burgundy: #704239;
+  --archive-gold: #a9864b;
+  --archive-line: rgba(92, 70, 43, .42);
+  --archive-shadow-soft: 0 6px 18px rgba(38, 27, 16, .16);
+  --archive-shadow-paper: 0 3px 10px rgba(38, 27, 16, .18);
+  --archive-motion: 180ms ease;
+}
+
+body { background-color:#181711; background-image:linear-gradient(rgba(18,19,14,.82),rgba(24,22,16,.88)),url('assets/hero-v2.png'); }
+body::before { opacity:.09; }
+.hero { background-image:linear-gradient(90deg,rgba(6,9,7,.76) 0 34%,rgba(6,9,7,.30) 58%,rgba(6,9,7,.48)),url('assets/hero-v2.png'); box-shadow:inset 0 -18px 36px rgba(0,0,0,.48); }
+.hero::before { background:linear-gradient(90deg,rgba(0,0,0,.42),transparent 62%),linear-gradient(0deg,rgba(0,0,0,.46),transparent 48%); }
+.hero-copy { margin-left:15%; }
+.hero .primary-btn { outline-width:1px; outline-offset:3px; box-shadow:0 5px 16px rgba(0,0,0,.42); transition:transform var(--archive-motion),background var(--archive-motion); }
+.hero .primary-btn:hover { transform:translateY(-2px); }
+
+.games-section { padding-block:58px 72px; background:linear-gradient(90deg,rgba(22,27,20,.93),rgba(31,30,21,.95) 50%,rgba(22,27,20,.93)); }
+.games-section::before { opacity:.42; }
+.section-title { margin-bottom:34px; }
+.game-grid { gap:24px; }
+.game-card { padding:8px; border-color:rgba(169,134,75,.64); background:linear-gradient(145deg,#24271e,#141710); box-shadow:0 8px 20px rgba(0,0,0,.42),inset 0 0 0 1px rgba(169,134,75,.13); transition:transform var(--archive-motion),box-shadow var(--archive-motion); }
+.game-card::before { inset:5px; border-color:rgba(169,134,75,.19); }
+.game-card:hover,.game-card:focus-visible { transform:translateY(-4px); box-shadow:0 13px 26px rgba(0,0,0,.58),inset 0 0 0 1px rgba(196,154,80,.22); }
+.card-image { border:0; }
+.card-image img { filter:saturate(.88) contrast(.97) brightness(.82); }
+.game-card:hover img { filter:saturate(.94) contrast(.99) brightness(.88); transform:scale(1.018); }
+.case-tab { top:17px; left:8px; padding:7px 15px; border-width:0 0 1px; background:rgba(17,36,27,.92); }
+.pin { box-shadow:none; opacity:.86; }
+.duration,.genre { opacity:.72; }
+.card-copy { padding:18px 15px 14px; }
+.card-copy h3 { margin-block:7px 10px; }
+.card-cta,.card-copy button { padding:10px 2px 3px; border:0; border-bottom:1px solid rgba(169,134,75,.64); background:transparent; }
+
+.archive-achievements { padding-block:38px 48px; }
+.archive-achievements::before { opacity:.42; }
+.achievement-list { flex-wrap:wrap; gap:36px; align-items:flex-start; }
+.achievement-card { display:flex; flex-direction:column; gap:10px; width:180px; padding:0; border:0; background:transparent; box-shadow:none; text-align:center; transition:transform var(--archive-motion); }
+.achievement-card:hover,.achievement-card:focus-visible { transform:translateY(-3px); outline:0; }
+.achievement-badge-wrap { width:116px; margin-inline:auto; box-shadow:0 5px 16px rgba(0,0,0,.42); }
+.achievement-card h3 { font-size:21px; letter-spacing:.035em; }
+.achievement-card em { font-size:14px; }
+.achievement-card p { margin-top:4px; }
+:focus-visible { outline:2px solid var(--archive-gold); outline-offset:3px; }
+
+@media(max-width:900px){.hero-copy{margin-left:0;background:linear-gradient(90deg,rgba(7,11,8,.80),rgba(7,11,8,.46) 78%,transparent);box-shadow:none}}
+@media(max-width:560px){.achievement-card{width:150px}.achievement-badge-wrap{width:96px}}
+@media(max-width:480px){.hero{background-position:61% center}.hero-copy{background:radial-gradient(ellipse at 38% 50%,rgba(7,11,8,.88),rgba(7,11,8,.58) 64%,transparent);box-shadow:none}.games-section{padding-block:44px 54px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

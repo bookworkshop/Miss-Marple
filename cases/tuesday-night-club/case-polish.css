@@ -1,0 +1,302 @@
+/* Final presentation layer: quiet literary archive, unchanged game mechanics. */
+:root {
+  --archive-paper:#e8d9bb;
+  --archive-paper-light:#f3e7cd;
+  --archive-paper-dark:#cfb98f;
+  --archive-ink:#29251d;
+  --archive-green:#182b22;
+  --archive-burgundy:#704239;
+  --archive-gold:#a9864b;
+  --archive-line:rgba(92,70,43,.42);
+  --archive-shadow-soft:0 6px 18px rgba(38,27,16,.16);
+  --archive-shadow-paper:0 3px 10px rgba(38,27,16,.18);
+  --archive-motion:180ms ease;
+}
+
+html,body { max-width:100%; overflow-x:hidden; }
+body::before { opacity:.08; }
+
+/* Compact folder header and line navigation */
+.case-header {
+  height:76px;
+  min-height:76px;
+  padding:10px clamp(20px,4vw,64px);
+  border-bottom:1px solid rgba(169,134,75,.48);
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+}
+.case-title p { font-size:9px; letter-spacing:.18em; }
+.case-title h1 { margin-top:2px; font-size:clamp(27px,3vw,38px); }
+.archive-link { font:600 11px Manrope,sans-serif; }
+.case-header .sound-toggle { width:36px; height:36px; }
+
+.stage-nav {
+  min-height:48px;
+  padding-inline:clamp(12px,3vw,42px);
+  border-bottom:1px solid rgba(169,134,75,.44);
+  box-shadow:0 4px 14px rgba(0,0,0,.24);
+}
+.stage-step {
+  min-height:48px;
+  padding:8px 4px 6px;
+  border:0;
+  border-bottom:1px solid transparent;
+  background:transparent;
+  font-size:9px;
+  letter-spacing:.08em;
+}
+.stage-step::before { display:inline; margin-right:6px; font-size:11px; }
+.stage-step::after { top:7px; right:5%; font-size:9px; }
+.stage-step.current { background:transparent; border-bottom-color:var(--archive-gold); box-shadow:none; }
+
+/* Let the task own the page. */
+.case-layout {
+  display:block;
+  width:min(1180px,calc(100% - 40px));
+  margin:24px auto 88px;
+  padding:0;
+  background:transparent;
+}
+.case-layout::before { inset:132px 16px 58px; opacity:.42; }
+.case-layout::after { display:none; }
+.case-file {
+  position:absolute;
+  z-index:2;
+  width:72px;
+  min-height:150px;
+  margin:18px 0 0 -52px;
+  padding:12px 8px;
+  opacity:.58;
+  pointer-events:none;
+}
+.case-file b { margin:18px 0 8px; font-size:42px; }
+.case-file p { font-size:7px; }
+
+#gameScreen {
+  width:100%;
+  min-height:520px;
+  padding:clamp(18px,3vw,36px);
+  border:1px solid rgba(169,134,75,.56);
+  background:rgba(10,15,12,.82);
+  box-shadow:0 14px 34px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+#gameScreen::before { inset:8px; border-color:rgba(169,134,75,.18); box-shadow:none; }
+.scene { padding:0; }
+
+/* A heading is a folder tab, not another framed card. */
+.scene-heading-card {
+  grid-template-columns:46px minmax(0,1fr) 38px;
+  gap:14px;
+  margin:0 0 24px;
+  padding:10px 2px 15px;
+  border:0;
+  border-bottom:1px solid rgba(169,134,75,.52);
+  background:transparent;
+  box-shadow:none;
+}
+.scene-heading-card::before,.scene-heading-card::after { display:none; }
+.scene-heading-index {
+  width:42px;
+  height:46px;
+  border:1px solid rgba(169,134,75,.58);
+  background:rgba(14,31,23,.88);
+  box-shadow:none;
+  font-size:20px;
+}
+.scene-heading-index::after { bottom:3px; }
+.scene-heading-card h2 { color:#ead6ae!important; font-size:clamp(34px,4vw,46px)!important; text-shadow:none; }
+.scene-heading-card .scene-kicker { color:#bd9453; }
+.scene-heading-card .scene-intro { max-width:780px; color:#c5b28d; font:15px/1.45 Manrope,sans-serif; }
+.scene-heading-seal { width:36px; height:36px; border-width:2px; color:#b88745; box-shadow:none; }
+.scene>.rule { display:none; }
+
+/* Shared paper, image and action treatment */
+:is(.paper-panel,.guest-card,.description-slip,.minutes-sheet,.debate-entry,.minutes-ledger,.case-task,.dish-note,.medical-file,.autopsy-file,.jones-evidence-card,.jones-action-panel,.theory-document,.discussion-note,.clue-letter,.clue-question-card,.clue-look-back,.clue-definition,.clue-finale,.official-report,.case-solved-finale) {
+  border-radius:2px!important;
+}
+:is(.guest-card,.description-slip,.debate-entry,.minutes-ledger,.dish-note,.medical-file,.autopsy-file,.jones-evidence-card,.theory-document,.discussion-note,.clue-letter,.clue-question-card,.clue-look-back,.clue-definition,.clue-finale) {
+  box-shadow:var(--archive-shadow-paper)!important;
+}
+:is(.guest-portrait img,.debate-portrait img,.theory-document-heading img,.clue-supper-card img,.clue-trifle-card img,.dish-reveal img) {
+  filter:saturate(.88) contrast(.97)!important;
+}
+
+:is(.action-button,.minutes-button,.case-action,.theory-action,#checkGuestList,#takeSeatButton,#checkFinalSolution,.return-to-archive) {
+  min-height:44px;
+  border:1px solid rgba(169,134,75,.72);
+  border-radius:2px;
+  background:var(--archive-green);
+  color:#ead7b1;
+  box-shadow:0 3px 9px rgba(0,0,0,.24);
+  font:600 10px Manrope,sans-serif;
+  letter-spacing:.12em;
+  transition:transform var(--archive-motion),background var(--archive-motion);
+}
+:is(.action-button,.minutes-button,.case-action,.theory-action,#checkGuestList,#takeSeatButton,#checkFinalSolution,.return-to-archive):hover { transform:translateY(-2px); background:#213c2e; }
+:is(.debate-options button,.challenge-options button,.logic-choices button,.clue-options button,.crime-options button,.paper-choice-list button) { min-height:44px; border-radius:2px!important; transition:transform var(--archive-motion),border-color var(--archive-motion); }
+:is(.debate-options button,.challenge-options button,.logic-choices button,.clue-options button,.crime-options button,.paper-choice-list button):hover { transform:translateY(-1px); }
+
+/* One family of archival stamps. */
+:is(.correct-stamp,.debate-stamp,.new-evidence-stamp,.not-proven-stamp,.clue-explained-stamp,.clue-possibility-stamp,.case-solved-stamp,.method-confirmed>strong,.four-theories-stamp) {
+  border:2px solid currentColor!important;
+  border-radius:2px!important;
+  color:var(--archive-burgundy)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  font-family:Manrope,sans-serif!important;
+  font-weight:600!important;
+  letter-spacing:.14em!important;
+  opacity:.86;
+}
+
+/* Scene 1: photographs and loose description slips. */
+.matching-board { padding:0; border:0!important; outline:0!important; background:transparent!important; box-shadow:none!important; }
+.matching-board::before { display:none; }
+.matching-layout { gap:22px; }
+.guest-grid { gap:16px; }
+.guest-card { border-width:1px!important; background:#14281f!important; box-shadow:0 5px 13px rgba(0,0,0,.32)!important; }
+.guest-portrait { border:0; aspect-ratio:4/5; }
+.description-slot { border-width:1px 0 0!important; }
+.description-bank { border:0!important; background:transparent!important; box-shadow:none!important; }
+.description-slip { border:1px solid var(--archive-line)!important; background:var(--archive-paper-light)!important; }
+
+/* Scene 2: a single minutes sheet. */
+.scene[data-scene="debate"] .minutes-sheet {
+  max-width:960px;
+  margin-inline:auto!important;
+  padding:30px!important;
+  border:1px solid var(--archive-line)!important;
+  background:var(--archive-paper)!important;
+  color:var(--archive-ink)!important;
+  box-shadow:var(--archive-shadow-soft)!important;
+}
+.scene[data-scene="debate"] .minutes-sheet::before { inset:10px; border:1px solid rgba(92,70,43,.24); }
+.scene[data-scene="debate"] .minutes-heading { border:0!important; border-bottom:1px solid var(--archive-line)!important; background:transparent!important; box-shadow:none!important; }
+.scene[data-scene="debate"] .minutes-heading>span { color:var(--archive-ink)!important; }
+.scene[data-scene="debate"] .minutes-heading small { color:#685842!important; }
+.scene[data-scene="debate"] .debate-entry { border:0!important; border-left:2px solid var(--archive-gold)!important; background:transparent!important; box-shadow:none!important; }
+.scene[data-scene="debate"] .minutes-ledger { border:0!important; border-top:1px solid var(--archive-line)!important; background:transparent!important; box-shadow:none!important; }
+.scene[data-scene="debate"] .debate-portrait { box-shadow:var(--archive-shadow-paper)!important; }
+
+/* Scene 3: supper objects stay dominant. */
+.case-reconstruction,.case-workspace { padding:0!important; border:0!important; outline:0!important; background:transparent!important; box-shadow:none!important; }
+.case-task { border:1px solid rgba(169,134,75,.40)!important; outline:0!important; box-shadow:none!important; }
+.serving-dishes { gap:18px; }
+.serving-dish { box-shadow:0 6px 16px rgba(0,0,0,.30)!important; }
+.serving-dish:hover { transform:translateY(-2px); }
+.medical-file,.autopsy-file { box-shadow:var(--archive-shadow-paper)!important; }
+.murder-question { box-shadow:0 6px 16px rgba(0,0,0,.28)!important; }
+
+/* Evidence: one intentional investigation board, lighter status treatment. */
+.jones-board { border:1px solid rgba(169,134,75,.62)!important; outline:0!important; box-shadow:0 10px 26px rgba(0,0,0,.48)!important; }
+.jones-board::before { opacity:.42; }
+.jones-evidence-card { border:0!important; border-top:1px solid var(--archive-line)!important; box-shadow:var(--archive-shadow-paper)!important; }
+.jones-action-panel { outline:0!important; border:1px solid var(--archive-line)!important; box-shadow:var(--archive-shadow-paper)!important; }
+.evidence-tag strong,.evidence-tag s { border:0!important; background:transparent!important; }
+
+/* Theories: four loose papers and slips on the table. */
+.theories-table { padding:18px!important; border:0!important; outline:0!important; box-shadow:none!important; }
+.theories-table::before { display:none; }
+.theories-table>header { margin-bottom:20px; padding:0 0 14px; border:0; border-bottom:1px solid rgba(231,195,132,.34); background:transparent; box-shadow:none; color:#ddc59a; }
+.theory-documents { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:940px; margin-inline:auto; }
+.theory-document { min-height:260px; padding:22px 18px; border:1px solid var(--archive-line)!important; background:var(--archive-paper)!important; box-shadow:var(--archive-shadow-paper)!important; }
+.theory-document:nth-child(2) { transform:rotate(.35deg); }
+.theory-document:nth-child(3) { transform:rotate(.25deg); }
+.theory-document:nth-child(4) { transform:rotate(-.35deg); }
+.empty-theory-notes { min-height:100px; border:0; border-top:1px solid var(--archive-line); }
+.discussion-bank { margin:20px 0 12px; padding:0; border:0!important; background:transparent!important; box-shadow:none!important; }
+.discussion-note { max-width:280px; border:1px solid var(--archive-line)!important; background:var(--archive-paper-light)!important; box-shadow:var(--archive-shadow-paper)!important; }
+.theories-final-question { border:1px solid var(--archive-line); outline:0; box-shadow:var(--archive-shadow-paper); }
+
+/* Clue: the quietest screen. */
+.scene[data-scene="clue"] { max-width:900px; margin-inline:auto; }
+.clue-desk { padding:20px; border:0; background:transparent; box-shadow:none; }
+.clue-desk::before { display:none; }
+.clue-letter-stage { grid-template-columns:minmax(0,1.3fr) minmax(220px,.7fr); gap:28px; }
+.clue-letter { min-height:250px; padding:34px 38px; }
+.clue-letter-copy { margin-top:42px; font-size:clamp(29px,4vw,42px); }
+.clue-reminder { padding:18px; border:0; border-left:1px solid var(--archive-gold); background:transparent; box-shadow:none; }
+.clue-question-card,.clue-look-back,.clue-finale { max-width:760px; border:0; box-shadow:var(--archive-shadow-paper)!important; }
+.clue-supper-card { min-height:190px; border:0; box-shadow:var(--archive-shadow-paper); }
+.clue-supper-card img { height:145px; }
+.clue-final-pair article { border:0; box-shadow:var(--archive-shadow-paper); }
+
+/* Verdict: an official file, with a restrained earned medallion. */
+.verdict-desk { padding:18px; }
+.official-report,.case-solved-finale { max-width:920px; margin-inline:auto; padding:clamp(28px,5vw,58px); border:1px solid var(--archive-line)!important; box-shadow:var(--archive-shadow-soft)!important; }
+.case-solved-finale { text-align:center; }
+.case-solved-finale h3 { margin-block:22px 14px; font-size:clamp(46px,6vw,72px); }
+.case-solved-stamp { width:112px; height:112px; }
+.final-achievement { grid-template-columns:58px 1fr; width:min(360px,100%); padding:10px 12px; border:0; border-top:1px solid rgba(169,134,75,.54); background:transparent; box-shadow:none; }
+.final-achievement img { width:58px; }
+.final-achievement strong { font-size:20px; }
+
+/* Compact utility controls. */
+.case-controls { min-height:58px; padding:8px clamp(14px,4vw,54px); box-shadow:0 -4px 14px rgba(0,0,0,.34); }
+.nav-button { min-height:40px; padding:9px 13px; border-radius:2px; }
+.nav-button.primary:disabled { border-color:transparent; background:transparent; opacity:.52; }
+.progress-copy>span { font:600 12px Manrope,sans-serif; letter-spacing:.05em; }
+.progress-copy button { margin-top:3px; color:#a99168; text-decoration:none; font-size:9px; opacity:.72; }
+.progress-copy button+button::before { content:" · "; margin-right:5px; }
+
+:focus-visible { outline:2px solid var(--archive-gold)!important; outline-offset:3px!important; }
+
+@media(max-width:1024px) {
+  .case-layout { width:min(100% - 28px,940px); }
+  .case-file { display:none; }
+  .theory-documents { gap:14px; }
+  .jones-evidence-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:800px) {
+  .case-header { height:auto; min-height:70px; padding:9px 16px; }
+  .case-title { margin-top:4px; }
+  .case-title h1 { font-size:30px; }
+  .stage-nav { grid-template-columns:repeat(7,116px); overflow-x:auto; scrollbar-width:thin; }
+  .case-layout { width:calc(100% - 20px); margin-block:14px 78px; }
+  #gameScreen { padding:18px 14px; }
+  .scene-heading-card { grid-template-columns:40px minmax(0,1fr); }
+  .scene-heading-seal { display:none; }
+  .scene-heading-card h2 { font-size:clamp(30px,7vw,40px)!important; }
+  .matching-layout,.clue-letter-stage { grid-template-columns:1fr; }
+  .description-bank { order:-1; }
+  .theory-documents { grid-template-columns:1fr 1fr; }
+  .clue-reminder { border-left:0; border-top:1px solid var(--archive-gold); }
+}
+
+@media(max-width:600px) {
+  .archive-link { max-width:104px; line-height:1.3; }
+  .case-title h1 { font-size:26px; }
+  .case-header .sound-toggle { width:34px; height:34px; }
+  #gameScreen { min-height:480px; padding:14px 10px; }
+  .scene-heading-card { gap:10px; margin-bottom:18px; padding-bottom:12px; }
+  .scene-heading-index { width:36px; height:42px; font-size:17px; }
+  .scene-heading-card h2 { font-size:clamp(27px,9vw,36px)!important; }
+  .scene-heading-card .scene-intro { font-size:13px; }
+  .guest-grid,.theory-documents,.jones-evidence-grid,.clue-supper-grid { grid-template-columns:1fr; }
+  .guest-grid { max-width:390px; margin-inline:auto; }
+  .scene[data-scene="debate"] .minutes-sheet { padding:20px 14px!important; }
+  .serving-dishes { grid-template-columns:1fr; }
+  .serving-dish { max-width:380px; margin-inline:auto; }
+  .clue-desk { padding:6px; }
+  .clue-letter { min-height:210px; padding:24px 18px; }
+  .clue-letter-copy { margin-top:32px; }
+  .official-report,.case-solved-finale { padding:26px 16px; }
+  .case-controls { grid-template-columns:auto minmax(0,1fr) auto; gap:7px; }
+  .nav-button { min-width:44px; padding-inline:9px; font-size:8px; }
+  .progress-copy button { display:inline; font-size:8px; }
+}
+
+@media(max-width:390px) {
+  .case-layout { width:calc(100% - 12px); }
+  .case-header { padding-inline:10px; }
+  .case-title h1 { font-size:23px; }
+  .scene-heading-card .scene-intro { font-size:12px; }
+  .progress-copy>span { font-size:10px; }
+  .progress-copy button { display:block; margin-inline:auto; }
+  .progress-copy button+button::before { content:""; margin:0; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+}
