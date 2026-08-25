@@ -58,6 +58,18 @@ let finalCaseSolved = false;
 let dragScrollFrame = null;
 let dragScrollDirection = 0;
 let autoAdvanceTimer = null;
+let mistakeCount = 0;
+
+const REQUIRED_DECISIONS = 35;
+
+function recordMistake(amount = 1) {
+  mistakeCount += Math.max(1, Number(amount) || 1);
+  saveGame();
+}
+
+function getInvestigationAccuracy() {
+  return Math.round((REQUIRED_DECISIONS / (REQUIRED_DECISIONS + mistakeCount)) * 100);
+}
 
 const answerOrderCache = new Map();
 const multipleChoiceSelectors = [
@@ -68,7 +80,13 @@ const multipleChoiceSelectors = [
   '.challenge-options',
   '.clue-options',
   '.crime-options',
-  '.paper-choice-list'
+  '.paper-choice-list',
+  '.seat-menu',
+  '.dish-word-bank',
+  '.clue-supper-grid',
+  '.crime-event-bank',
+  '.selective-place-cards',
+  '.discussion-bank > div'
 ].join(',');
 
 function getAnswerIdentity(button) {
@@ -94,6 +112,7 @@ function randomizeAnswerGroups(root = gameScreen) {
         const swapIndex = Math.floor(Math.random() * (index + 1));
         [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
       }
+      if (order.every((identity, index) => identity === identities[index])) order.push(order.shift());
       answerOrderCache.set(cacheKey, order);
     }
 
@@ -336,6 +355,7 @@ function bindClubInteractions() {
     wrongGuests.forEach(id => delete clubState.assignments[id]);
     saveGame();
     const complete = clubState.correct.length === clubGuests.length;
+    if (!complete) recordMistake(wrongGuests.length);
     renderClubScene(complete ? 'The members of the Tuesday Night Club have been identified.' : 'Some descriptions are still in the wrong place. Look at the guests again.');
     if (!complete) document.querySelector('.matching-board').classList.add('has-errors');
   });
@@ -434,6 +454,7 @@ function renderDebateScene(message = '') {
   document.querySelectorAll('[data-debate-option]').forEach(button => button.addEventListener('click', () => {
     const selected = Number(button.dataset.debateOption);
     if (selected !== entry.correct) {
+      recordMistake();
       button.classList.remove('wrong');
       void button.offsetWidth;
       button.classList.add('wrong');
@@ -558,7 +579,7 @@ function renderCaseScene(message = '') {
   document.querySelectorAll('[data-seat-choice]').forEach(button => button.addEventListener('click', () => { caseDinnerGuests[openSeatMenu] = button.dataset.seatChoice; openSeatMenu = null; saveGame(); renderCaseScene(); }));
   document.querySelector('#checkDinnerGuests')?.addEventListener('click', () => {
     const correct = ['mrJones', 'mrsJones', 'missClark'].every(id => caseDinnerGuests.includes(id));
-    if (!correct) { caseDinnerGuests = [null, null, null]; saveGame(); renderCaseScene('Someone at this table does not belong here. Remember: three people sat down to supper.'); return; }
+    if (!correct) { recordMistake(); caseDinnerGuests = [null, null, null]; saveGame(); renderCaseScene('Someone at this table does not belong here. Remember: three people sat down to supper.'); return; }
     caseDinnerGuestsComplete = true; saveGame(); renderCaseScene('Three people sat down to supper.');
   });
   document.querySelectorAll('[data-dish]').forEach(button => button.addEventListener('click', () => { activeDishNote = button.dataset.dish; saveGame(); renderCaseScene(); }));
@@ -568,17 +589,17 @@ function renderCaseScene(message = '') {
     const dish = dinnerDishes.find(item => item.id === activeDishNote);
     const assembledName = caseDishWords[dish.id].join(' ');
     const acceptedOrders = dish.acceptedOrders || [dish.words.join(' ')];
-    if (!acceptedOrders.includes(assembledName)) { caseDishWords[dish.id] = []; saveGame(); renderCaseScene('The words are not in the right order. Try the dish again.'); return; }
+    if (!acceptedOrders.includes(assembledName)) { recordMistake(); caseDishWords[dish.id] = []; saveGame(); renderCaseScene('The words are not in the right order. Try the dish again.'); return; }
     caseDishesExamined[dish.id] = true; activeDishNote = null; saveGame(); renderCaseScene(`${dish.name} has been entered in the supper list.`);
   });
   document.querySelector('#recordSupper')?.addEventListener('click', () => { caseDishesReviewed = true; activeDishNote = null; saveGame(); renderCaseScene(); });
   document.querySelectorAll('[data-outcome]').forEach(button => button.addEventListener('click', () => { const values = ['unknown', 'recovered', 'died']; const id = button.dataset.outcome; caseOutcomes[id] = values[(values.indexOf(caseOutcomes[id]) + 1) % values.length]; saveGame(); renderCaseScene(); }));
   document.querySelector('#checkOutcomes')?.addEventListener('click', () => {
-    if (caseOutcomes.mrJones !== 'recovered' || caseOutcomes.missClark !== 'recovered' || caseOutcomes.mrsJones !== 'died') { renderCaseScene('The outcome does not match Sir Henry’s account.'); return; }
+    if (caseOutcomes.mrJones !== 'recovered' || caseOutcomes.missClark !== 'recovered' || caseOutcomes.mrsJones !== 'died') { recordMistake(); renderCaseScene('The outcome does not match Sir Henry’s account.'); return; }
     caseOutcomesComplete = true; medicalReportOpened = true; autopsyReportOpened = true; saveGame(); renderCaseScene('Three people became ill. Two recovered. One died.');
   });
   document.querySelectorAll('[data-murder-answer]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.murderAnswer === 'no') { renderCaseScene('Arsenic was found after an apparent case of food poisoning. Examine the reports again.'); return; }
+    if (button.dataset.murderAnswer === 'no') { recordMistake(); renderCaseScene('Arsenic was found after an apparent case of food poisoning. Examine the reports again.'); return; }
     caseConfirmedAsMurder = true;
     saveGame();
     completeAndAdvance({ delay: 900, forceAdvance: true });
@@ -639,11 +660,11 @@ function renderMrJonesEvidenceScene(message = '') {
     const id = button.dataset.jonesEvidence;
     if (!mrJonesEvidenceOpened[id]) { mrJonesEvidenceOpened[id] = true; saveGame(); renderMrJonesEvidenceScene(); return; }
     if (!newItem) return;
-    if (id !== newItem.target) { renderMrJonesEvidenceScene('That evidence is not affected by this statement. Look again.'); return; }
+    if (id !== newItem.target) { recordMistake(); renderMrJonesEvidenceScene('That evidence is not affected by this statement. Look again.'); return; }
     mrJonesEvidenceStatus[id] = newItem.status; mrJonesNewEvidenceProgress += 1; saveGame(); renderMrJonesEvidenceScene();
   }));
   document.querySelectorAll('[data-logic-answer]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.logicAnswer === 'yes') { renderMrJonesEvidenceScene('Not quite. Evidence against a suspect can fail without proving the opposite.'); return; }
+    if (button.dataset.logicAnswer === 'yes') { recordMistake(); renderMrJonesEvidenceScene('Not quite. Evidence against a suspect can fail without proving the opposite.'); return; }
     mrJonesLogicQuestionComplete = true;
     mrJonesSceneCompleted = true;
     saveGame();
@@ -720,11 +741,11 @@ function bindTheoriesInteractions() {
     theoryNotes.forEach(note => { if (theoryReconstruction[note.id] === note.owner) theoryReconstructionCorrect[note.id] = true; else { delete theoryReconstruction[note.id]; errors += 1; } });
     if (!errors) {
       theoryReconstructionCompleted = true;
-    }
+    } else recordMistake(errors);
     saveGame(); renderTheoriesScene(errors ? 'Some details have ended up in the wrong theory. Think back to what each member actually suggested. Read the discussion again if you need to.' : 'The club’s theories have been reconstructed.');
   });
   document.querySelectorAll('[data-theories-final]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.theoriesFinal !== 'b') { renderTheoriesScene('Not quite. A possible explanation is not the same as a proved solution.'); return; }
+    if (button.dataset.theoriesFinal !== 'b') { recordMistake(); renderTheoriesScene('Not quite. A possible explanation is not the same as a proved solution.'); return; }
     theoriesFinalQuestionComplete = true;
     theoriesCompleted = true;
     saveGame();
@@ -760,16 +781,16 @@ function renderClueScene(message = '') {
 function bindClueInteractions() {
   document.querySelector('#clueHintButton')?.addEventListener('click', () => { clueHintsOpened = Math.min(3, clueHintsOpened + 1); saveGame(); renderClueScene(); });
   document.querySelectorAll('[data-clue-meaning]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.clueMeaning !== 'c') { renderClueScene('That meaning does not fit Miss Marple’s idea. Try thinking of another use of the expression.'); return; }
+    if (button.dataset.clueMeaning !== 'c') { recordMistake(); renderClueScene('That meaning does not fit Miss Marple’s idea. Try thinking of another use of the expression.'); return; }
     clueMeaningSolved = true; saveGame(); renderClueScene('Miss Marple’s question has changed the meaning of an old clue.');
   }));
   document.querySelectorAll('[data-clue-supper]').forEach(button => button.addEventListener('click', () => {
     clueSupperConnection = button.dataset.clueSupper;
-    if (clueSupperConnection !== 'trifle') { saveGame(); renderClueScene('That detail does not naturally connect with the new meaning of “hundreds and thousands”. Look again.'); return; }
+    if (clueSupperConnection !== 'trifle') { recordMistake(); saveGame(); renderClueScene('That detail does not naturally connect with the new meaning of “hundreds and thousands”. Look again.'); return; }
     clueSupperConnectionSolved = true; saveGame(); renderClueScene('The words and the dessert now point towards the same detail.');
   }));
   document.querySelectorAll('[data-clue-inference]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.clueInference !== 'a') { renderClueScene('That does not follow from the two clues you have connected. Look at the dessert again.'); return; }
+    if (button.dataset.clueInference !== 'a') { recordMistake(); renderClueScene('That does not follow from the two clues you have connected. Look at the dessert again.'); return; }
     clueInferenceSolved = true;
     clueCompleted = true;
     saveGame();
@@ -819,6 +840,7 @@ function renderVerdictScene(message = '') {
       <div class="solved-ornament" aria-hidden="true"><span></span><b>◆</b><span></span></div>
       <p class="solved-summary">He poisoned the hundreds and thousands used on the trifle. Gladys helped him because she believed he would marry her after Mrs Jones’s death. Mr Jones removed the poisoned decorations from his own portion, while Miss Clark did not eat the trifle because she was banting. Mrs Jones ate the poisoned portion and died.</p>
       <div class="method-confirmed"><article><small>THE POISON</small><span>HUNDREDS AND THOUSANDS</span></article><b>+</b><article><small>THE DISH</small><span>TRIFLE</span></article><strong>METHOD CONFIRMED</strong></div>
+      <section class="investigation-score" aria-label="Investigation accuracy ${getInvestigationAccuracy()} percent"><span class="score-ring" style="--score:${getInvestigationAccuracy()}"><strong>${getInvestigationAccuracy()}%</strong><small>ACCURACY</small></span><div><small>INVESTIGATION ASSESSMENT</small><h4>${mistakeCount === 0 ? 'Flawless deduction' : getInvestigationAccuracy() >= 90 ? 'Excellent deduction' : getInvestigationAccuracy() >= 75 ? 'Sharp investigation' : 'Case successfully solved'}</h4><p>${mistakeCount === 0 ? 'No mistakes were recorded.' : `${mistakeCount} ${mistakeCount === 1 ? 'mistake was' : 'mistakes were'} recorded during the case.`}</p></div></section>
       <blockquote>“Miss Marple had noticed the detail everyone else overlooked.”</blockquote>
       <aside class="final-achievement" aria-label="Achievement earned: A Seat at the Table"><img src="../../assets/achievements/tuesday-night-club-v2.png" alt="A Seat at the Table achievement"><div><span>ACHIEVEMENT EARNED</span><strong>A Seat at the Table</strong><p>Case No. 01 complete</p></div></aside>
       <a class="return-to-archive" href="../../index.html#games">RETURN TO THE ARCHIVE →</a>
@@ -832,23 +854,23 @@ function bindVerdictInteractions() {
   document.querySelectorAll('[data-crime-event]').forEach(button => button.addEventListener('click', () => { crimeSequence.push(button.dataset.crimeEvent); saveGame(); renderVerdictScene(); }));
   document.querySelectorAll('[data-sequence-index]').forEach(button => button.addEventListener('click', () => { crimeSequence.splice(Number(button.dataset.sequenceIndex), 1); saveGame(); renderVerdictScene(); }));
   document.querySelector('#checkCrimeSequence')?.addEventListener('click', () => {
-    if (crimeSequence.join('|') !== crimeEvents.map(event => event.id).join('|')) { renderVerdictScene('Something in the sequence does not fit. Think about how the poison could reach Mrs Jones without killing everyone else.'); return; }
+    if (crimeSequence.join('|') !== crimeEvents.map(event => event.id).join('|')) { recordMistake(); renderVerdictScene('Something in the sequence does not fit. Think about how the poison could reach Mrs Jones without killing everyone else.'); return; }
     crimeSequenceSolved = true; saveGame(); renderVerdictScene('METHOD RECONSTRUCTED');
   });
   document.querySelectorAll('[data-selective-person]').forEach(button => button.addEventListener('click', () => {
     const statement = selectiveStatements[selectiveStatementIndex];
-    if (button.dataset.selectivePerson !== statement.id) { renderVerdictScene('That does not explain what happened to this person.'); return; }
+    if (button.dataset.selectivePerson !== statement.id) { recordMistake(); renderVerdictScene('That does not explain what happened to this person.'); return; }
     selectivePoisoningSolved[statement.id] = true; selectiveStatementIndex += 1; saveGame(); renderVerdictScene(selectiveStatementIndex === 3 ? 'THE SELECTIVE POISONING NOW MAKES SENSE.' : 'Correct. Now place the next statement.');
   }));
   document.querySelector('#bantingNoteButton')?.addEventListener('click', () => { bantingNoteOpen = !bantingNoteOpen; saveGame(); renderVerdictScene(); });
   document.querySelectorAll('[data-gladys-motive]').forEach(button => button.addEventListener('click', () => {
-    if (button.dataset.gladysMotive !== 'b') { renderVerdictScene('That does not match Gladys’s reason for helping Mr Jones.'); return; }
+    if (button.dataset.gladysMotive !== 'b') { recordMistake(); renderVerdictScene('That does not match Gladys’s reason for helping Mr Jones.'); return; }
     gladysMotiveSolved = true; saveGame(); renderVerdictScene('GLADYS LINCH — ACCOMPLICE. Gladys helped Mr Jones because she believed he would marry her after his wife’s death.');
   }));
   document.querySelectorAll('[data-solution-field]').forEach(button => button.addEventListener('click', () => { finalCaseSolution[button.dataset.solutionField] = button.dataset.solutionValue; saveGame(); renderVerdictScene(); }));
   document.querySelector('#checkFinalSolution')?.addEventListener('click', () => {
     const correct = finalCaseSolution.murderer === 'Mr Jones' && finalCaseSolution.accomplice === 'Gladys Linch' && finalCaseSolution.method === 'poisoned hundreds and thousands on the trifle' && finalCaseSolution.motive === 'inheritance';
-    if (!correct) { renderVerdictScene('The case is not complete yet. Some parts of the solution do not match the evidence.'); return; }
+    if (!correct) { recordMistake(); renderVerdictScene('The case is not complete yet. Some parts of the solution do not match the evidence.'); return; }
     finalCaseSolved = true;
     saveGame();
     completeCurrentScene();
@@ -1030,6 +1052,7 @@ function goToPreviousScene() {
 
 function resetCurrentScene() {
   window.clearTimeout(autoAdvanceTimer);
+  answerOrderCache.clear();
   sceneComplete = false;
   replayingScene = currentScene;
 
@@ -1104,7 +1127,7 @@ function saveGame() {
     theoriesFinalQuestionComplete, theoriesCompleted,
     clueMeaningSolved, clueHintsOpened, clueSupperConnection, clueSupperConnectionSolved, clueInferenceSolved, clueCompleted,
     crimeSequence, crimeSequenceSolved, selectivePoisoningSolved, selectiveStatementIndex, bantingNoteOpen,
-    gladysMotiveSolved, finalCaseSolution, finalCaseSolved
+    gladysMotiveSolved, finalCaseSolution, finalCaseSolved, mistakeCount
   }));
 }
 
@@ -1112,6 +1135,7 @@ function loadGame() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved) return;
+    mistakeCount = Math.max(0, Number(saved.mistakeCount) || 0);
     currentScene = Math.min(Math.max(Number(saved.currentScene) || 0, 0), scenes.length - 1);
     maxUnlockedScene = Math.min(Math.max(Number(saved.maxUnlockedScene) || 0, 0), scenes.length - 1);
     completedScenes = new Set((saved.completedScenes || []).filter(index => Number.isInteger(index) && index >= 0 && index < scenes.length));
@@ -1251,12 +1275,13 @@ document.addEventListener('dragend', stopDragAutoScroll);
 restartButton.addEventListener('click', () => {
   if (!window.confirm('Начать расследование заново? Весь сохранённый прогресс будет удалён.')) return;
   window.clearTimeout(autoAdvanceTimer);
+  answerOrderCache.clear();
   localStorage.removeItem(STORAGE_KEY); currentScene = 0; maxUnlockedScene = 0; completedScenes = new Set(); clubState = { assignments: {}, correct: [], seated: false }; debateProgress = { currentIndex: 0, recorded: [], part1Complete: false }; debateCompleted = false; selectedDescription = null;
   caseDinnerGuests = [null, null, null]; caseDinnerGuestsComplete = false; caseDishesExamined = { lobster: false, trifle: false, breadCheese: false }; caseDishesReviewed = false; caseOutcomes = { mrJones: 'unknown', mrsJones: 'unknown', missClark: 'unknown' }; caseOutcomesComplete = false; medicalReportOpened = false; autopsyReportOpened = false; caseConfirmedAsMurder = false; openSeatMenu = null; activeDishNote = null; caseDishWords = { lobster: [], trifle: [], breadCheese: [] }; replayingScene = null;
   mrJonesEvidenceOpened = { inheritance: false, poisonAccess: false, otherWoman: false, cornflour: false, letter: false }; mrJonesNewEvidenceProgress = 0; mrJonesEvidenceStatus = { inheritance: 'still-relevant', poisonAccess: 'still-relevant', otherWoman: null, cornflour: null, letter: null }; mrJonesLogicQuestionComplete = false; mrJonesSceneCompleted = false;
   theoryReconstruction = {}; theoryReconstructionCorrect = {}; theoryReconstructionCompleted = false; theoriesFinalQuestionComplete = false; theoriesCompleted = false; selectedTheoryNote = null;
   clueMeaningSolved = false; clueHintsOpened = 0; clueSupperConnection = null; clueSupperConnectionSolved = false; clueInferenceSolved = false; clueCompleted = false;
-  crimeSequence = []; crimeSequenceSolved = false; selectivePoisoningSolved = { mrsJones: false, mrJones: false, missClark: false }; selectiveStatementIndex = 0; bantingNoteOpen = false; gladysMotiveSolved = false; finalCaseSolution = { murderer: null, accomplice: null, method: null, motive: null }; finalCaseSolved = false; renderCurrentScene();
+  crimeSequence = []; crimeSequenceSolved = false; selectivePoisoningSolved = { mrsJones: false, mrJones: false, missClark: false }; selectiveStatementIndex = 0; bantingNoteOpen = false; gladysMotiveSolved = false; finalCaseSolution = { murderer: null, accomplice: null, method: null, motive: null }; finalCaseSolved = false; mistakeCount = 0; renderCurrentScene();
 });
 
 const soundToggle = document.querySelector('#soundToggle');

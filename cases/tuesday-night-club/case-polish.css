@@ -363,6 +363,34 @@ body::before { opacity:.08; }
 .method-confirmed article small { margin-bottom:2px!important; }
 .method-confirmed article span { font-size:16px!important; }
 .method-confirmed>strong { padding:6px 11px!important; }
+.investigation-score {
+  display:grid;
+  grid-template-columns:82px 1fr;
+  align-items:center;
+  gap:17px;
+  width:min(500px,100%);
+  margin:12px auto;
+  padding:10px 16px;
+  border-block:1px solid rgba(101,73,39,.48);
+  color:#29352d;
+  text-align:left;
+}
+.score-ring {
+  --score:100;
+  display:grid;
+  place-content:center;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  background:radial-gradient(circle at center,#e1c99c 57%,transparent 59%),conic-gradient(#294235 calc(var(--score)*1%),#ad9368 0);
+  box-shadow:inset 0 0 0 1px #8b693e,0 4px 10px rgba(69,43,20,.2);
+  text-align:center;
+}
+.score-ring strong,.score-ring small { display:block; }
+.score-ring strong { font:600 22px/1 "Cormorant Garamond",serif; }
+.score-ring small,.investigation-score>div>small { font:600 7px Manrope,sans-serif; letter-spacing:.15em; }
+.investigation-score h4 { margin:3px 0 1px; font:600 23px/1 "Cormorant Garamond",serif; }
+.investigation-score p { margin:0; color:#624c34; font:14px/1.25 "Cormorant Garamond",serif; }
 .case-solved-finale blockquote { margin:10px auto 12px!important; font-size:17px!important; }
 .final-achievement { margin:10px auto!important; }
 .return-to-archive { margin-top:0!important; }
@@ -373,6 +401,9 @@ body::before { opacity:.08; }
   .case-solved-stamp { width:58px!important; height:58px!important; font-size:11px!important; }
   .case-solved-finale h3 { font-size:36px!important; }
   .method-confirmed { grid-template-columns:1fr!important; }
+  .investigation-score { grid-template-columns:64px 1fr; gap:10px; padding-inline:8px; }
+  .score-ring { width:58px; height:58px; }
+  .score-ring strong { font-size:18px; }
 }
 
 @media(prefers-reduced-motion:reduce) {
