@@ -774,7 +774,7 @@ function bindClueInteractions() {
     clueCompleted = true;
     saveGame();
     renderClueScene('A new method is possible.');
-    completeAndAdvance({ delay: 1200 });
+    completeAndAdvance({ delay: 900, forceAdvance: true });
   }));
 }
 
