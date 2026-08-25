@@ -503,6 +503,7 @@ function renderCaseScene(message = '') {
     task = `<section class="case-task seating-task">
       <div class="case-part"><span>PART I</span><strong>RECONSTRUCT THE TABLE</strong></div>
       <p>Three people sat down to supper. Select a name for each place.</p>
+      <button class="case-action" id="checkDinnerGuests" type="button" ${caseDinnerGuests.every(Boolean) ? '' : 'disabled'}>CHECK THE TABLE</button>
       <div class="dinner-table" aria-label="Three places at the supper table">
         <span class="table-candle" aria-hidden="true"></span>
         ${caseDinnerGuests.map((guestId, index) => `<div class="dinner-place place-${index + 1}">
@@ -512,7 +513,6 @@ function renderCaseScene(message = '') {
           ${openSeatMenu === index ? `<div class="seat-menu" aria-label="Choose a guest">${guestOptions}</div>` : ''}
         </div>`).join('')}
       </div>
-      <button class="case-action" id="checkDinnerGuests" type="button" ${caseDinnerGuests.every(Boolean) ? '' : 'disabled'}>CHECK THE TABLE</button>
     </section>`;
   } else if (!caseDishesReviewed) {
     const activeDish = dinnerDishes.find(dish => dish.id === activeDishNote);

@@ -181,6 +181,7 @@ body::before { opacity:.08; }
 /* Scene 3: supper objects stay dominant. */
 .case-reconstruction,.case-workspace { padding:0!important; border:0!important; outline:0!important; background:transparent!important; box-shadow:none!important; }
 .case-task { border:1px solid rgba(169,134,75,.40)!important; outline:0!important; box-shadow:none!important; }
+.seating-task #checkDinnerGuests { margin:4px auto 12px; }
 .serving-dishes { gap:18px; }
 .serving-dish { box-shadow:0 6px 16px rgba(0,0,0,.30)!important; }
 .serving-dish:hover { transform:translateY(-2px); }
