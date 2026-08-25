@@ -405,7 +405,7 @@ function renderDebatePortrait(entry) {
 function renderDebateScene(message = '') {
   if (debateCompleted) {
     gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet debate-finished">${renderMinutesEmblem()}
-      <header class="minutes-heading"><span>MINUTES OF THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
+      <header class="minutes-heading"><span>THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
       <div class="debate-stamp">DEBATE<br>RECORDED</div>
       <h3>Everyone has made their case.</h3>
       ${renderMinutesList()}
@@ -418,7 +418,7 @@ function renderDebateScene(message = '') {
   const marks = debateEntries.map((item, index) => `<span class="entry-mark ${debateProgress.recorded.includes(item.id) ? 'recorded' : ''} ${index === debateProgress.currentIndex ? 'current' : ''}" aria-hidden="true"></span>`).join('');
 
   gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet">${renderMinutesEmblem()}
-    <header class="minutes-heading"><span>MINUTES OF THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
+    <header class="minutes-heading"><span>THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
     <p class="part-label">PART 1 — RECORD THE DEBATE</p>
     <div class="entry-progress"><span>Entry ${debateProgress.currentIndex + 1} of 6</span><div>${marks}</div></div>
     <div class="debate-layout">

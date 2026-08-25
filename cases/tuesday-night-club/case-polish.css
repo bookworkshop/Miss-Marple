@@ -104,9 +104,9 @@ body::before { opacity:.08; }
   font-size:20px;
 }
 .scene-heading-index::after { bottom:3px; }
-.scene-heading-card h2 { color:#ead6ae!important; font-size:clamp(34px,4vw,46px)!important; text-shadow:none; }
-.scene-heading-card .scene-kicker { color:#bd9453; }
-.scene-heading-card .scene-intro { max-width:780px; color:#c5b28d; font:15px/1.45 Manrope,sans-serif; }
+.scene-heading-card h2 { color:#2b241b!important; font-size:clamp(34px,4vw,46px)!important; text-shadow:0 1px rgba(255,246,222,.46); }
+.scene-heading-card .scene-kicker { color:#704239; }
+.scene-heading-card .scene-intro { max-width:780px; color:#594b39; font:15px/1.45 Manrope,sans-serif; }
 .scene-heading-seal { width:36px; height:36px; border-width:2px; color:#b88745; box-shadow:none; }
 .scene>.rule { display:none; }
 
