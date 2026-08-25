@@ -215,12 +215,15 @@ body::before { opacity:.08; }
 .scene[data-scene="clue"] { max-width:1180px; margin-inline:auto; }
 .clue-desk { padding:10px; border:0; background:transparent; box-shadow:none; }
 .clue-desk::before { display:none; }
-.clue-letter-stage { grid-template-columns:minmax(0,1.45fr) minmax(250px,.55fr); gap:20px; max-width:1100px; margin-inline:auto; }
-.clue-letter { min-height:230px; padding:26px 30px; }
-.clue-letter-copy { margin-top:34px; font-size:clamp(29px,4vw,42px); }
-.clue-reminder { padding:16px 18px; border:0; border-left:1px solid var(--archive-gold); background:rgba(232,217,187,.82); color:#3e3327; box-shadow:none; }
+.clue-letter-stage { grid-template-columns:minmax(0,1.5fr) minmax(230px,.5fr); gap:16px; max-width:980px; margin-inline:auto; }
+.clue-letter { min-height:180px; padding:18px 24px; }
+.clue-letter-copy { margin-top:22px; font-size:clamp(27px,3.4vw,36px); }
+.clue-magnifier { right:7%; bottom:14px; width:54px; height:54px; border-width:4px; }
+.clue-magnifier::after { width:34px; right:-25px; bottom:-13px; border-top-width:5px; }
+.clue-reminder { padding:12px 15px; border:0; border-left:1px solid var(--archive-gold); background:rgba(232,217,187,.82); color:#3e3327; box-shadow:none; }
 .clue-reminder p { color:#3e3327!important; }
-.clue-reminder strong { color:#203329!important; border-top-color:rgba(92,70,43,.42)!important; }
+.clue-reminder p { margin:10px 0; font-size:16px; }
+.clue-reminder strong { padding-top:9px; color:#203329!important; border-top-color:rgba(92,70,43,.42)!important; font-size:15px; }
 .clue-question-card,.clue-look-back,.clue-finale { max-width:980px; margin-top:18px; padding:22px 26px; border:0; box-shadow:var(--archive-shadow-paper)!important; }
 .clue-supper-card { min-height:190px; border:0; box-shadow:var(--archive-shadow-paper); }
 .clue-supper-card img { height:145px; }
@@ -284,8 +287,8 @@ body::before { opacity:.08; }
   .serving-dishes { grid-template-columns:1fr; }
   .serving-dish { max-width:380px; margin-inline:auto; }
   .clue-desk { padding:6px; }
-  .clue-letter { min-height:210px; padding:24px 18px; }
-  .clue-letter-copy { margin-top:32px; }
+  .clue-letter { min-height:170px; padding:18px 14px; }
+  .clue-letter-copy { margin-top:22px; }
   .official-report,.case-solved-finale { padding:26px 16px; }
   .case-controls { grid-template-columns:auto minmax(0,1fr) auto; gap:7px; }
   .nav-button { min-width:44px; padding-inline:9px; font-size:8px; }
