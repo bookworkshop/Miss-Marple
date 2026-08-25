@@ -407,7 +407,6 @@ function renderDebateScene(message = '') {
     gameScreen.innerHTML = sceneShell(scenes[1], `<section class="minutes-sheet debate-finished">${renderMinutesEmblem()}
       <header class="minutes-heading"><span>THE TUESDAY NIGHT CLUB</span><small>What makes a good detective?</small></header>
       <div class="debate-stamp">DEBATE<br>RECORDED</div>
-      <h3>Everyone has made their case.</h3>
       ${renderMinutesList()}
     </section>`);
     return;
@@ -449,8 +448,7 @@ function renderDebateScene(message = '') {
       debateProgress.part1Complete = true;
       debateCompleted = true;
       saveGame();
-      renderDebateScene();
-      completeAndAdvance({ delay: 1200 });
+      completeAndAdvance({ delay: 900 });
       return;
     }
     debateProgress.currentIndex += 1;
