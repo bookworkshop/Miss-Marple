@@ -206,6 +206,7 @@ body::before { opacity:.08; }
 .theory-document:nth-child(4) { transform:rotate(-.35deg); }
 .empty-theory-notes { min-height:100px; border:0; border-top:1px solid var(--archive-line); }
 .discussion-bank { margin:20px 0 12px; padding:0; border:0!important; background:transparent!important; box-shadow:none!important; }
+.discussion-bank p { margin:4px 0 10px; color:#ead7b1; font:italic 17px/1.4 "Cormorant Garamond",serif; text-align:center; text-shadow:0 1px 2px rgba(0,0,0,.5); }
 .discussion-note { max-width:280px; border:1px solid var(--archive-line)!important; background:var(--archive-paper-light)!important; box-shadow:var(--archive-shadow-paper)!important; }
 .theories-final-question { border:1px solid var(--archive-line); outline:0; box-shadow:var(--archive-shadow-paper); }
 
